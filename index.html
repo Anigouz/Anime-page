@@ -3,22 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <title>Upcoming Anime</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #0f0f0f;
-      color: #f1f1f1;
       margin: 0;
-      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
     }
 
-    h1 {
+    video.bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.2;
+    }
+
+    header {
+      background: #111;
+      padding: 15px;
       text-align: center;
-      font-size: 2rem;
+      font-size: 20px;
+      font-weight: bold;
       color: #ff6b6b;
-      margin-bottom: 30px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     #animeList {
@@ -26,10 +41,11 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
+      padding: 20px;
     }
 
     .anime {
-      background-color: #1a1a1a;
+      background-color: rgba(0, 0, 0, 0.7);
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       overflow: hidden;
@@ -45,7 +61,6 @@
       width: 100%;
       height: 300px;
       object-fit: cover;
-      border-bottom: 2px solid #333;
     }
 
     .anime h3 {
@@ -61,54 +76,154 @@
       color: #ccc;
     }
 
-    .anime a {
+    .anime a.trailer {
       display: block;
       margin: 0 10px 15px;
       padding: 8px;
       background-color: #ff6b6b;
       color: white;
-      text-decoration: none;
+      text-align: center;
       border-radius: 6px;
+      text-decoration: none;
       font-weight: 600;
-      transition: background-color 0.3s ease;
     }
 
-    .anime a:hover {
+    .anime a.trailer:hover {
       background-color: #ff4949;
     }
 
-    @media (max-width: 500px) {
-      .anime {
-        width: 90%;
-      }
+    .menu {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 10;
+    }
+
+    .menu button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #news, #home {
+      display: none;
+      padding: 20px;
+    }
+
+    #home.visible, #news.visible {
+      display: block;
+    }
+
+    .news-item {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    }
+
+    .news-item h3 {
+      color: #ff6b6b;
+      margin-bottom: 8px;
+    }
+
+    .news-item p {
+      color: #ccc;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <h1>🎬 Kelasi Anime Plem'yeralari</h1>
-  <div id="animeList">Yuklanmoqda...</div>
 
-  <script>
-    fetch('https://api.jikan.moe/v4/seasons/upcoming')
+<video class="bg" autoplay muted loop>
+  <source src="https://www.videvo.net/videvo_files/converted/2016_08/preview/160727_A_180_BG.mp447673.webm" type="video/webm">
+</video>
+
+<header>🎬 Kelasi Anime Prem'yeralari</header>
+
+<div id="home" class="visible">
+  <div id="animeList">Yuklanmoqda...</div>
+</div>
+
+<div id="news">
+  <h2>📰 Yangiliklar</h2>
+  <div id="newsList">Yuklanmoqda...</div>
+</div>
+
+<div class="menu">
+  <button onclick="showHome()">Home</button>
+  <button onclick="showNews()">News</button>
+</div>
+
+<script>
+  function showHome() {
+    document.getElementById('home').classList.add('visible');
+    document.getElementById('news').classList.remove('visible');
+  }
+
+  function showNews() {
+    document.getElementById('news').classList.add('visible');
+    document.getElementById('home').classList.remove('visible');
+    loadNews();
+  }
+
+  // Load Anime
+  fetch('https://api.jikan.moe/v4/seasons/upcoming')
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('animeList');
+      list.innerHTML = '';
+      data.data.forEach(a => {
+        const youtubeQuery = encodeURIComponent(`${a.titles[0].title} trailer`);
+        const div = document.createElement('div');
+        div.className = 'anime';
+        div.innerHTML = `
+          <img src="${a.images.jpg.image_url}" alt="${a.titles[0].title}">
+          <h3>${a.titles[0].title}</h3>
+          <p>${a.season || '?'} ${a.year || ''}</p>
+          <a href="https://www.youtube.com/results?search_query=${youtubeQuery}" target="_blank" class="trailer">▶ Treylerni Ko‘rish</a>
+        `;
+        list.appendChild(div);
+      });
+    })
+    .catch(err => {
+      document.getElementById('animeList').innerText = "Xatolik yuz berdi!";
+      console.error(err);
+    });
+
+  // Load News
+  function loadNews() {
+    const newsList = document.getElementById('newsList');
+    newsList.innerHTML = 'Yuklanmoqda...';
+    
+    fetch('https://pastebin.com/raw/XXXXXXX') // << BU YERGA Pastebin RAW LINK QO'Y!
       .then(res => res.json())
       .then(data => {
-        const list = document.getElementById('animeList');
-        list.innerHTML = '';
-        data.data.forEach(a => {
+        newsList.innerHTML = '';
+        data.forEach(item => {
           const div = document.createElement('div');
-          div.className = 'anime';
+          div.className = 'news-item';
           div.innerHTML = `
-            <img src="${a.images.jpg.image_url}" alt="${a.titles[0].title}">
-            <h3>${a.titles[0].title}</h3>
-            <p>${a.season || '???'} ${a.year || ''}</p>
-            <a href="${a.url}" target="_blank">MAL sahifasi</a>`;
-          list.appendChild(div);
+            <h3>${item.title}</h3>
+            <p>${item.desc}</p>
+          `;
+          newsList.appendChild(div);
         });
       })
       .catch(err => {
-        document.getElementById('animeList').innerText = "Xatolik yuz berdi!";
+        newsList.innerText = 'Yangiliklarni olishda xatolik.';
         console.error(err);
       });
-  </script>
+  }
+</script>
+
 </body>
-</html>
+  </html>
