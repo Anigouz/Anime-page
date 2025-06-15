@@ -125,8 +125,8 @@ header {
   padding: 20px;
 }
 
-.visible {
-  display: block !important;
+#home.visible, #news.visible {
+  display: block;
 }
 
 #newsContent h3 {
@@ -155,8 +155,6 @@ header {
   box-shadow: 0 0 20px #ff6b6b;
   animation: pulseBorder 2s infinite;
   border: 5px solid transparent;
-  z-index: 11;
-  background: #000;
 }
 
 @keyframes pulseBorder {
@@ -218,25 +216,33 @@ header {
   }
 ]
 </script><script>
+  function setView(section) {
+    document.getElementById("home").classList.remove("visible");
+    document.getElementById("news").classList.remove("visible");
+    document.getElementById("trailerPlayer").style.display = "none";
+    if (section === 'home') {
+      document.getElementById("home").classList.add("visible");
+    } else if (section === 'news') {
+      document.getElementById("news").classList.add("visible");
+      loadNews();
+    } else if (section === 'trailer') {
+      document.getElementById("trailerPlayer").style.display = "block";
+    }
+  }
+
   function showHome() {
-    document.getElementById('home').classList.add('visible');
-    document.getElementById('news').classList.remove('visible');
-    document.getElementById('trailerPlayer').style.display = 'none';
-    history.pushState({ section: "home" }, "", "#home");
+    history.pushState({view: 'home'}, '', '#home');
+    setView('home');
   }
 
   function showNews() {
-    document.getElementById('news').classList.add('visible');
-    document.getElementById('home').classList.remove('visible');
-    document.getElementById('trailerPlayer').style.display = 'none';
-    loadNews();
-    history.pushState({ section: "news" }, "", "#news");
+    history.pushState({view: 'news'}, '', '#news');
+    setView('news');
   }
 
   function loadNews() {
     const jsonText = document.getElementById("newsData").textContent;
     let data = [];
-
     try {
       data = JSON.parse(jsonText);
     } catch (e) {
@@ -263,9 +269,24 @@ header {
       const script = document.createElement("script");
       script.src = "https://counterapi.com/c.js";
       script.async = true;
+      script.onload = disableCounterLinks;
       document.body.appendChild(script);
       window.counterApiLoaded = true;
+    } else {
+      disableCounterLinks();
     }
+  }
+
+  function disableCounterLinks() {
+    setTimeout(() => {
+      document.querySelectorAll('.counterapi a').forEach(link => {
+        link.removeAttribute('href');
+        link.style.pointerEvents = 'none';
+        link.style.color = 'inherit';
+        link.style.textDecoration = 'none';
+        link.style.cursor = 'default';
+      });
+    }, 1000);
   }
 
   function showTrailer(url) {
@@ -277,33 +298,23 @@ header {
     const videoId = match[1];
     const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 
+    history.pushState({view: 'trailer'}, '', '#trailer');
     document.getElementById("ytPlayer").src = embedUrl;
-    document.getElementById("trailerPlayer").style.display = "block";
-    document.getElementById("home").classList.remove("visible");
-    document.getElementById("news").classList.remove("visible");
-
-    history.pushState({ trailerOpen: true }, "trailer", "#trailer");
+    setView('trailer');
   }
 
   function hideTrailer() {
     document.getElementById("ytPlayer").src = "";
-    document.getElementById("trailerPlayer").style.display = "none";
-    document.getElementById("home").classList.add("visible");
-
-    if (location.hash === "#trailer") {
-      history.back();
-    }
+    showHome();
   }
 
-  window.addEventListener('popstate', (event) => {
-    if (event.state && event.state.trailerOpen) {
-      hideTrailer();
-    } else if (event.state && event.state.section === "news") {
-      showNews();
-    } else {
-      showHome();
+  window.onpopstate = function (event) {
+    if (!event.state) return;
+    setView(event.state.view);
+    if (event.state.view !== 'trailer') {
+      document.getElementById("ytPlayer").src = "";
     }
-  });
+  };
 
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
