@@ -11,34 +11,26 @@
       font-family: 'Poppins', sans-serif;
       color: #fff;
       overflow-x: hidden;
-      background-color: rgba(0, 0, 0, 0.75); /* qora fon */
+      background: rgba(0, 0, 0, 0.85);
     }
 
     video.bg {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      min-width: 100%;
+      min-height: 100%;
       object-fit: cover;
-      z-index: -2;
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.75); /* qoraroq fon ustma-ust */
       z-index: -1;
+      opacity: 0.15;
+      pointer-events: none;
     }
 
     header {
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.8);
       padding: 15px;
       text-align: center;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
       color: #ff6b6b;
       position: sticky;
@@ -86,7 +78,7 @@
       color: #ccc;
     }
 
-    .anime a.trailer {
+    .trailer {
       display: block;
       margin: 0 10px 15px;
       padding: 8px;
@@ -96,9 +88,11 @@
       border-radius: 6px;
       text-decoration: none;
       font-weight: 600;
+      border: none;
+      cursor: pointer;
     }
 
-    .anime a.trailer:hover {
+    .trailer:hover {
       background-color: #ff4949;
     }
 
@@ -107,7 +101,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(0, 0, 0, 0.85);
+      background: #111;
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
@@ -132,66 +126,63 @@
       display: block;
     }
 
-    #newsContent h3 {
-      color: #ff6b6b;
-      margin-bottom: 5px;
+    #trailerModal {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.95);
+      padding: 20px;
+      z-index: 20;
     }
 
-    #newsContent p {
-      margin-bottom: 20px;
-      color: #ddd;
+    #trailerModal button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-weight: bold;
+      float: right;
+    }
+
+    #trailerModal iframe {
+      width: 100%;
+      height: 315px;
+      border: none;
     }
   </style>
 </head>
 <body>
 
-<!-- Background video -->
 <video class="bg" autoplay muted loop>
   <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
 </video>
 
-<!-- Qoraroq overlay -->
-<div class="overlay"></div>
-
-<!-- Toolbar -->
 <header>AniGouz</header>
 
-<!-- Home section -->
 <div id="home" class="visible">
   <div id="animeList">Yuklanmoqda...</div>
 </div>
 
-<!-- News section -->
 <div id="news">
-  <h2>Yangiliklar</h2>
-  <div id="newsContent">Yuklanmoqda...</div>
+  <h2>📰 Yangiliklar</h2>
+  <p>Yangi anime mavsumi yangiliklari tez orada qo‘shiladi.</p>
 </div>
 
-<!-- Bottom menu -->
 <div class="menu">
   <button onclick="showHome()">Home</button>
   <button onclick="showNews()">News</button>
 </div>
 
-<!-- JSON ichida news -->
-<script type="application/json" id="newsData">
-[
-  {
-    "title": "Solo Leveling Season 2",
-    "description": "Sung Jin-Woo qaytmoqda! Endi u yanada kuchliroq."
-  },
-  {
-    "title": "Bleach: TYBW Part 3",
-    "description": "Ichigo'ning yangi formasi va kuchli dushmanlar kutmoqda."
-  },
-  {
-    "title": "Jujutsu Kaisen Season 3",
-    "description": "Gojo va Yuji sahnaga qaytmoqda. Qonli janglar oldinda!"
-  }
-]
-</script>
+<!-- Trailer Modal -->
+<div id="trailerModal">
+  <button onclick="closeTrailer()">Yopish</button>
+  <div style="clear:both; text-align:center;">
+    <iframe id="trailerFrame" allowfullscreen></iframe>
+  </div>
+</div>
 
-<!-- JS -->
 <script>
   function showHome() {
     document.getElementById('home').classList.add('visible');
@@ -201,32 +192,24 @@
   function showNews() {
     document.getElementById('news').classList.add('visible');
     document.getElementById('home').classList.remove('visible');
-    loadNews();
   }
 
-  function loadNews() {
-    const jsonText = document.getElementById("newsData").textContent;
-    let data = [];
+  function openTrailer(url) {
+    const trailerFrame = document.getElementById('trailerFrame');
+    const modal = document.getElementById('trailerModal');
 
-    try {
-      data = JSON.parse(jsonText);
-    } catch (e) {
-      console.error("JSON parsingda xatolik:", e);
-      document.getElementById("newsContent").innerHTML = "<p>Xatolik yuz berdi!</p>";
-      return;
+    const videoIdMatch = url.match(/(?:\?v=|\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (videoIdMatch && videoIdMatch[1]) {
+      trailerFrame.src = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
+      modal.style.display = 'block';
+    } else {
+      alert("YouTube traileri topilmadi!");
     }
+  }
 
-    const newsContainer = document.getElementById("newsContent");
-    newsContainer.innerHTML = '';
-
-    data.forEach(item => {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <h3>${item.title}</h3>
-        <p>${item.description}</p>
-      `;
-      newsContainer.appendChild(div);
-    });
+  function closeTrailer() {
+    document.getElementById('trailerFrame').src = '';
+    document.getElementById('trailerModal').style.display = 'none';
   }
 
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
@@ -235,14 +218,18 @@
       const list = document.getElementById('animeList');
       list.innerHTML = '';
       data.data.forEach(a => {
-        const youtubeQuery = encodeURIComponent(`${a.titles[0].title} trailer`);
+        const title = a.titles[0].title;
+        const trailerLink = a.trailer && a.trailer.url ? a.trailer.url : null;
+
         const div = document.createElement('div');
         div.className = 'anime';
         div.innerHTML = `
-          <img src="${a.images.jpg.image_url}" alt="${a.titles[0].title}">
-          <h3>${a.titles[0].title}</h3>
+          <img src="${a.images.jpg.image_url}" alt="${title}">
+          <h3>${title}</h3>
           <p>${a.season || '?'} ${a.year || ''}</p>
-          <a href="https://www.youtube.com/results?search_query=${youtubeQuery}" target="_blank" class="trailer">▶ Treylerni Ko‘rish</a>
+          ${trailerLink 
+            ? `<button class="trailer" onclick="openTrailer('${trailerLink}')">▶ Treylerni Ko‘rish</button>`
+            : `<p style="margin:10px;">Treyler yo‘q</p>`}
         `;
         list.appendChild(div);
       });
@@ -252,6 +239,5 @@
       console.error(err);
     });
 </script>
-
 </body>
   </html>
