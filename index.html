@@ -231,11 +231,13 @@
 
 <script>
   function showHome() {
+    hideTrailer();
     document.getElementById('home').classList.add('visible');
     document.getElementById('news').classList.remove('visible');
   }
 
   function showNews() {
+    hideTrailer();
     document.getElementById('news').classList.add('visible');
     document.getElementById('home').classList.remove('visible');
     loadNews();
@@ -278,13 +280,24 @@
     document.getElementById("ytPlayer").src = embedUrl;
     document.getElementById("trailerPlayer").style.display = "block";
     document.getElementById("home").classList.remove("visible");
+    document.getElementById("news").classList.remove("visible");
   }
 
   function hideTrailer() {
     document.getElementById("ytPlayer").src = "";
     document.getElementById("trailerPlayer").style.display = "none";
-    document.getElementById("home").classList.add("visible");
   }
+
+  // Telefonning orqaga tugmasi uchun
+  window.addEventListener('popstate', function () {
+    hideTrailer();
+    showHome();
+  });
+
+  // Har doim sahifa yuklanganda back tugmasi ishlashi uchun
+  window.onload = function () {
+    history.pushState(null, null, location.href);
+  };
 
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
