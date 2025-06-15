@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>About me</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anime Page with Video Background</title>
   <style>
     * {
       margin: 0;
@@ -11,16 +11,30 @@
       box-sizing: border-box;
     }
 
-    body {
-      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmNg02qKcVtc7KkxueP5S1_bfMY2J_sbY0-rgnWqJRow&s'); /* Anime background */
-      background-size: cover;
-      background-position: center;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    body, html {
+      height: 100%;
       font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Video fon */
+    .video-bg {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
+      filter: brightness(0.4);
+    }
+
+    .content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
     }
 
     .profile-pic {
@@ -52,11 +66,18 @@
 </head>
 <body>
 
-  <!-- Profile rasmi -->
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScg0cNLsr7sgF75nyqaVA96Mi5WAruSJ1siFt5x_hRig&s" alt="Profile Photo" class="profile-pic">
+  <!-- Video fon -->
+  <video autoplay muted loop class="video-bg">
+    <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/InShot_20250615_165938893.mp4?alt=media&token=50e1464f-cccd-47a2-85a8-039a1cf6bb88" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 
-  <!-- Telegram tugma -->
-  <a href="https://t.me/leo_izzat" class="button" target="_blank">Kanalga Qo‘shilish</a>
+  <!-- Kontent -->
+  <div class="content">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScg0cNLsr7sgF75nyqaVA96Mi5WAruSJ1siFt5x_hRig&s" alt="Profile Photo" class="profile-pic">
+    <br>
+    <a href="https://t.me/leo_izzat" class="button" target="_blank">Bog'lanish</a>
+  </div>
 
 </body>
 </html>
