@@ -138,8 +138,14 @@
     }
 
     #newsContent p {
-      margin-bottom: 20px;
+      margin-bottom: 5px;
       color: #ddd;
+    }
+
+    #newsContent .views {
+      font-size: 13px;
+      color: #ccc;
+      margin-bottom: 15px;
     }
 
     #trailerPlayer {
@@ -230,18 +236,12 @@
 </script>
 
 <script>
-  window.onload = function () {
-    history.replaceState({ trailerOpen: false }, null, location.href);
-  };
-
   function showHome() {
-    hideTrailer();
     document.getElementById('home').classList.add('visible');
     document.getElementById('news').classList.remove('visible');
   }
 
   function showNews() {
-    hideTrailer();
     document.getElementById('news').classList.add('visible');
     document.getElementById('home').classList.remove('visible');
     loadNews();
@@ -262,11 +262,24 @@
     const newsContainer = document.getElementById("newsContent");
     newsContainer.innerHTML = '';
 
-    data.forEach(item => {
+    data.forEach((item, index) => {
+      const uniqueKey = `news_${index + 1}`;
       const div = document.createElement('div');
-      div.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p>`;
+      div.innerHTML = `
+        <h3>${item.title}</h3>
+        <p>${item.description}</p>
+        <div class="views counterapi" ns="anigo.uz" key="${uniqueKey}" label="views"></div>
+      `;
       newsContainer.appendChild(div);
     });
+
+    if (!window.counterApiLoaded) {
+      const script = document.createElement("script");
+      script.src = "https://counterapi.com/c.js";
+      script.async = true;
+      document.body.appendChild(script);
+      window.counterApiLoaded = true;
+    }
   }
 
   function showTrailer(url) {
@@ -281,24 +294,13 @@
     document.getElementById("ytPlayer").src = embedUrl;
     document.getElementById("trailerPlayer").style.display = "block";
     document.getElementById("home").classList.remove("visible");
-    document.getElementById("news").classList.remove("visible");
-
-    // har safar trailer ochilganda push state
-    history.pushState({ trailerOpen: true }, null, location.href);
   }
 
   function hideTrailer() {
     document.getElementById("ytPlayer").src = "";
     document.getElementById("trailerPlayer").style.display = "none";
+    document.getElementById("home").classList.add("visible");
   }
-
-  window.addEventListener('popstate', function (event) {
-    if (event.state && event.state.trailerOpen) {
-      hideTrailer();
-    } else {
-      showHome();
-    }
-  });
 
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
