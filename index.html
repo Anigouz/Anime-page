@@ -11,21 +11,33 @@
       font-family: 'Poppins', sans-serif;
       color: #fff;
       overflow-x: hidden;
+      position: relative;
     }
 
+    /* Background video full fit */
     video.bg {
       position: fixed;
       top: 0;
       left: 0;
-      min-width: 100%;
-      min-height: 100%;
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
+      z-index: -2;
+    }
+
+    /* Dark transparent overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6); /* shaffof qora */
       z-index: -1;
-      opacity: 0.25;
     }
 
     header {
-      background: #111;
+      background: rgba(0, 0, 0, 0.8);
       padding: 15px;
       text-align: center;
       font-size: 22px;
@@ -98,7 +110,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: #111;
+      background: rgba(0, 0, 0, 0.8);
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
@@ -144,26 +156,29 @@
 </head>
 <body>
 
-<!-- Background Video -->
+<!-- 🔥 Background video -->
 <video class="bg" autoplay muted loop>
   <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
 </video>
 
-<!-- Toolbar -->
+<!-- 🌓 Dark overlay -->
+<div class="overlay"></div>
+
+<!-- 🔰 Toolbar -->
 <header>AniGouz</header>
 
-<!-- Home View -->
+<!-- 🏠 Home Section -->
 <div id="home" class="visible">
   <div id="animeList">Yuklanmoqda...</div>
 </div>
 
-<!-- News View -->
+<!-- 📰 News Section -->
 <div id="news">
   <h2>📰 Yangiliklar</h2>
   <div id="newsList">Yuklanmoqda...</div>
 </div>
 
-<!-- Bottom Navigation Menu -->
+<!-- 📱 Bottom Navigation -->
 <div class="menu">
   <button onclick="showHome()">Home</button>
   <button onclick="showNews()">News</button>
@@ -181,7 +196,7 @@
     loadNews();
   }
 
-  // Load Anime List
+  // 🧲 Load Anime
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
     .then(data => {
@@ -205,12 +220,12 @@
       console.error(err);
     });
 
-  // Load News from Pastebin JSON
+  // 🧲 Load News from Pastebin (change to your real link!)
   function loadNews() {
     const newsList = document.getElementById('newsList');
     newsList.innerHTML = 'Yuklanmoqda...';
 
-    fetch('https://pastebin.com/raw/XXXXXXX') // <<< PASTEBIN RAW LINKNI SHU YERGA QO‘Y!
+    fetch('https://pastebin.com/raw/XXXXXXX') // Pastebin JSON RAW LINKINGNI QO‘Y!
       .then(res => res.json())
       .then(data => {
         newsList.innerHTML = '';
