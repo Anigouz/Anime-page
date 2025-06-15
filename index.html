@@ -125,8 +125,8 @@ header {
   padding: 20px;
 }
 
-#home.visible, #news.visible {
-  display: block;
+.visible {
+  display: block !important;
 }
 
 #newsContent h3 {
@@ -145,10 +145,6 @@ header {
   margin-bottom: 15px;
 }
 
-.views.counterapi {
-  pointer-events: none;
-}
-
 #trailerPlayer {
   display: none;
   position: relative;
@@ -159,6 +155,8 @@ header {
   box-shadow: 0 0 20px #ff6b6b;
   animation: pulseBorder 2s infinite;
   border: 5px solid transparent;
+  z-index: 11;
+  background: #000;
 }
 
 @keyframes pulseBorder {
@@ -223,12 +221,16 @@ header {
   function showHome() {
     document.getElementById('home').classList.add('visible');
     document.getElementById('news').classList.remove('visible');
+    document.getElementById('trailerPlayer').style.display = 'none';
+    history.pushState({ section: "home" }, "", "#home");
   }
 
   function showNews() {
     document.getElementById('news').classList.add('visible');
     document.getElementById('home').classList.remove('visible');
+    document.getElementById('trailerPlayer').style.display = 'none';
     loadNews();
+    history.pushState({ section: "news" }, "", "#news");
   }
 
   function loadNews() {
@@ -278,13 +280,30 @@ header {
     document.getElementById("ytPlayer").src = embedUrl;
     document.getElementById("trailerPlayer").style.display = "block";
     document.getElementById("home").classList.remove("visible");
+    document.getElementById("news").classList.remove("visible");
+
+    history.pushState({ trailerOpen: true }, "trailer", "#trailer");
   }
 
   function hideTrailer() {
     document.getElementById("ytPlayer").src = "";
     document.getElementById("trailerPlayer").style.display = "none";
     document.getElementById("home").classList.add("visible");
+
+    if (location.hash === "#trailer") {
+      history.back();
+    }
   }
+
+  window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.trailerOpen) {
+      hideTrailer();
+    } else if (event.state && event.state.section === "news") {
+      showNews();
+    } else {
+      showHome();
+    }
+  });
 
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
@@ -311,4 +330,4 @@ header {
       console.error(err);
     });
 </script></body>
-</html>
+  </html>
