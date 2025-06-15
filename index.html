@@ -11,6 +11,7 @@
       font-family: 'Poppins', sans-serif;
       color: #fff;
       overflow-x: hidden;
+      background-color: #000;
     }
 
     video.bg {
@@ -20,20 +21,12 @@
       width: 100vw;
       height: 100vh;
       object-fit: cover;
-      z-index: -2;
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
       z-index: -1;
+      opacity: 0.15;
     }
 
     header {
-      background: #111;
+      background: rgba(0, 0, 0, 0.75);
       padding: 15px;
       text-align: center;
       font-size: 22px;
@@ -42,6 +35,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
+      backdrop-filter: blur(5px);
     }
 
     #animeList {
@@ -129,48 +123,38 @@
     #home.visible, #news.visible {
       display: block;
     }
-
-    .news-block h3 {
-      color: #ff6b6b;
-      margin: 10px 0 5px;
-    }
-
-    .news-block p {
-      color: #ddd;
-      margin-bottom: 20px;
-    }
   </style>
 </head>
 <body>
 
-<!-- Background video -->
+<!-- Video background -->
 <video class="bg" autoplay muted loop>
   <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
 </video>
-<div class="overlay"></div>
 
-<!-- Toolbar -->
-<header>AniGouz</header>
+<!-- Header -->
+<header>🎬 AniGouz</header>
 
-<!-- Home page -->
+<!-- Home Section -->
 <div id="home" class="visible">
   <div id="animeList">Yuklanmoqda...</div>
 </div>
 
-<!-- News page -->
+<!-- News Section -->
 <div id="news">
   <h2>📰 Yangiliklar</h2>
   <div id="newsContent">Yuklanmoqda...</div>
 </div>
 
-<!-- Bottom navigation -->
+<!-- Bottom Menu -->
 <div class="menu">
   <button onclick="showHome()">Home</button>
   <button onclick="showNews()">News</button>
 </div>
 
+<!-- JavaScript -->
 <script>
-  // Toggle view
+  // Toggle Views
   function showHome() {
     document.getElementById('home').classList.add('visible');
     document.getElementById('news').classList.remove('visible');
@@ -181,7 +165,7 @@
     document.getElementById('home').classList.remove('visible');
   }
 
-  // Load anime list from Jikan API
+  // Load Anime List
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
     .then(data => {
@@ -205,27 +189,26 @@
       console.error(err);
     });
 
-  // Load news from Pastebin (text -> JSON)
-  fetch('https://pastebin.com/raw/Q9Vjq9wG')
-    .then(res => res.text())
-    .then(text => {
-      const news = JSON.parse(text);
-      const newsSection = document.getElementById('newsContent');
-      newsSection.innerHTML = '';
-      news.forEach(item => {
-        const block = document.createElement('div');
-        block.className = 'news-block';
-        block.innerHTML = `
+  // Load News from Gist JSON
+  fetch('https://gist.githubusercontent.com/Anigouz/31e6acb962e71ee1949a5d9b633a1d27/raw/8e8a53a9e16b5e61f4a1fab6f5d4707c24ff6965/gistfile1.txt')
+    .then(res => res.json())
+    .then(newsData => {
+      const newsContainer = document.getElementById('newsContent');
+      newsContainer.innerHTML = '';
+      newsData.forEach(item => {
+        const div = document.createElement('div');
+        div.style.marginBottom = '15px';
+        div.innerHTML = `
           <h3>${item.title}</h3>
-          <p>${item.desc}</p>
+          <p>${item.description}</p>
         `;
-        newsSection.appendChild(block);
+        newsContainer.appendChild(div);
       });
     })
     .catch(err => {
-      document.getElementById('newsContent').innerHTML = '<p style="color:red;">❌ Maʼlumot yuklanmadi!</p>';
+      document.getElementById('newsContent').innerHTML = '<p style="color:red;">❌ Yangiliklarni yuklashda xatolik</p>';
       console.error(err);
     });
 </script>
 </body>
-  </html>
+</html>
