@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Upcoming Anime</title>
+  <title>AniGouz | Anime App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
@@ -21,19 +21,20 @@
       min-height: 100%;
       object-fit: cover;
       z-index: -1;
-      opacity: 0.2;
+      opacity: 0.25;
     }
 
     header {
       background: #111;
       padding: 15px;
       text-align: center;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
       color: #ff6b6b;
       position: sticky;
       top: 0;
       z-index: 10;
+      letter-spacing: 1px;
     }
 
     #animeList {
@@ -143,21 +144,26 @@
 </head>
 <body>
 
+<!-- Background Video -->
 <video class="bg" autoplay muted loop>
-  <source src="https://www.videvo.net/videvo_files/converted/2016_08/preview/160727_A_180_BG.mp447673.webm" type="video/webm">
+  <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
 </video>
 
-<header>🎬 Kelasi Anime Prem'yeralari</header>
+<!-- Toolbar -->
+<header>AniGouz</header>
 
+<!-- Home View -->
 <div id="home" class="visible">
   <div id="animeList">Yuklanmoqda...</div>
 </div>
 
+<!-- News View -->
 <div id="news">
   <h2>📰 Yangiliklar</h2>
   <div id="newsList">Yuklanmoqda...</div>
 </div>
 
+<!-- Bottom Navigation Menu -->
 <div class="menu">
   <button onclick="showHome()">Home</button>
   <button onclick="showNews()">News</button>
@@ -175,7 +181,7 @@
     loadNews();
   }
 
-  // Load Anime
+  // Load Anime List
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
     .then(data => {
@@ -199,12 +205,12 @@
       console.error(err);
     });
 
-  // Load News
+  // Load News from Pastebin JSON
   function loadNews() {
     const newsList = document.getElementById('newsList');
     newsList.innerHTML = 'Yuklanmoqda...';
-    
-    fetch('https://pastebin.com/raw/XXXXXXX') // << BU YERGA Pastebin RAW LINK QO'Y!
+
+    fetch('https://pastebin.com/raw/XXXXXXX') // <<< PASTEBIN RAW LINKNI SHU YERGA QO‘Y!
       .then(res => res.json())
       .then(data => {
         newsList.innerHTML = '';
@@ -219,7 +225,7 @@
         });
       })
       .catch(err => {
-        newsList.innerText = 'Yangiliklarni olishda xatolik.';
+        newsList.innerText = 'Yangiliklarni yuklashda xatolik.';
         console.error(err);
       });
   }
