@@ -14,18 +14,19 @@
     body, html {
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
     }
 
-    /* Video fon */
+    /* VIDEO FON */
     .video-bg {
       position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      z-index: -1;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
-      filter: brightness(0.4);
+      z-index: -1;
+      filter: brightness(0.5);
     }
 
     .content {
@@ -47,6 +48,12 @@
       margin-bottom: 20px;
     }
 
+    .info-text {
+      margin-bottom: 15px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
     .button {
       background-color: #0088cc;
       color: white;
@@ -66,7 +73,7 @@
 </head>
 <body>
 
-  <!-- Video fon -->
+  <!-- Orqa fon uchun video -->
   <video autoplay muted loop class="video-bg">
     <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/InShot_20250615_165938893.mp4?alt=media&token=50e1464f-cccd-47a2-85a8-039a1cf6bb88" type="video/mp4">
     Your browser does not support the video tag.
@@ -75,9 +82,13 @@
   <!-- Kontent -->
   <div class="content">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScg0cNLsr7sgF75nyqaVA96Mi5WAruSJ1siFt5x_hRig&s" alt="Profile Photo" class="profile-pic">
-    <br>
+    
+    <div class="info-text">
+      Men bilan bog‘lanish tugmasini bosish orqali bog‘lansangiz bo‘ladi
+    </div>
+
     <a href="https://t.me/leo_izzat" class="button" target="_blank">Bog'lanish</a>
   </div>
 
 </body>
-</html>
+  </html>
