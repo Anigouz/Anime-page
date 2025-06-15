@@ -142,7 +142,6 @@
       color: #ddd;
     }
 
-    /* YouTube trailer player */
     #trailerPlayer {
       display: none;
       position: relative;
@@ -168,44 +167,51 @@
       height: 405px;
       border: none;
     }
+
+    #trailerBackBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      background: #ff6b6b;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-<!-- Background video -->
 <video class="bg" autoplay muted loop>
   <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
 </video>
 
-<!-- Qoraroq overlay -->
 <div class="overlay"></div>
 
-<!-- Toolbar -->
 <header>AniGouz</header>
 
-<!-- YouTube player -->
 <div id="trailerPlayer">
+  <button id="trailerBackBtn" onclick="hideTrailer()">← Back</button>
   <iframe id="ytPlayer" allowfullscreen></iframe>
 </div>
 
-<!-- Home section -->
 <div id="home" class="visible">
   <div id="animeList">Yuklanmoqda...</div>
 </div>
 
-<!-- News section -->
 <div id="news">
   <h2>Yangiliklar</h2>
   <div id="newsContent">Yuklanmoqda...</div>
 </div>
 
-<!-- Bottom menu -->
 <div class="menu">
   <button onclick="showHome()">Home</button>
   <button onclick="showNews()">News</button>
 </div>
 
-<!-- News JSON -->
 <script type="application/json" id="newsData">
 [
   {
@@ -223,7 +229,6 @@
 ]
 </script>
 
-<!-- JS -->
 <script>
   function showHome() {
     document.getElementById('home').classList.add('visible');
@@ -261,11 +266,24 @@
     });
   }
 
-  function showTrailer(title) {
-    const query = encodeURIComponent(`${title} trailer`);
-    const ytSearchUrl = `https://www.youtube.com/embed?listType=search&list=${query}&autoplay=1`;
-    document.getElementById("ytPlayer").src = ytSearchUrl;
+  function showTrailer(url) {
+    const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (!match) {
+      alert("Treyler topilmadi.");
+      return;
+    }
+    const videoId = match[1];
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+
+    document.getElementById("ytPlayer").src = embedUrl;
     document.getElementById("trailerPlayer").style.display = "block";
+    document.getElementById("home").classList.remove("visible");
+  }
+
+  function hideTrailer() {
+    document.getElementById("ytPlayer").src = "";
+    document.getElementById("trailerPlayer").style.display = "none";
+    document.getElementById("home").classList.add("visible");
   }
 
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
@@ -275,13 +293,15 @@
       list.innerHTML = '';
       data.data.forEach(a => {
         const title = a.titles[0].title;
+        const trailerUrl = a.trailer && a.trailer.url ? a.trailer.url : null;
+
         const div = document.createElement('div');
         div.className = 'anime';
         div.innerHTML = `
           <img src="${a.images.jpg.image_url}" alt="${title}">
           <h3>${title}</h3>
           <p>${a.season || '?'} ${a.year || ''}</p>
-          <a href="javascript:void(0)" onclick="showTrailer('${title}')" class="trailer">▶ Treylerni Ko‘rish</a>
+          ${trailerUrl ? `<a href="javascript:void(0)" onclick="showTrailer('${trailerUrl}')" class="trailer">▶ Treylerni Ko‘rish</a>` : `<span style="color:#888; margin:0 10px 10px; display:block;">Treyler yo‘q</span>`}
         `;
         list.appendChild(div);
       });
