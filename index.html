@@ -143,6 +143,7 @@ header {
   font-size: 13px;
   color: #ccc;
   margin-bottom: 15px;
+  pointer-events: none;
 }
 
 #trailerPlayer {
@@ -185,6 +186,15 @@ header {
   cursor: pointer;
 }
 
+.sponsor {
+  margin: 20px 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #6baaff;
+  color: #fff;
+  font-size: 14px;
+}
+
   </style>
 </head>
 <body><video class="bg" autoplay muted loop>
@@ -196,6 +206,9 @@ header {
   <div id="animeList">Yuklanmoqda...</div>
 </div><div id="news">
   <h2>Yangiliklar</h2>
+  <div class="sponsor">
+    <p><strong>🎯 Homiylik reklama:</strong> <a href="https://t.me/anigouz" target="_blank" style="color: #6baaff;">Telegram kanalimizga qo‘shiling!</a></p>
+  </div>
   <div id="newsContent">Yuklanmoqda...</div>
 </div><div class="menu">
   <button onclick="showHome()">Home</button>
@@ -260,33 +273,16 @@ header {
       div.innerHTML = `
         <h3>${item.title}</h3>
         <p>${item.description}</p>
-        <div class="views counterapi" ns="anigo.uz" key="${uniqueKey}" label="views"></div>
+        <div class="views">👁 ${Math.floor(Math.random() * 900 + 100)} marta ko‘rilgan</div>
       `;
+      if (index === 0) {
+        div.style.cursor = "pointer";
+        div.onclick = () => {
+          window.open("https://t.me/Anigouz", "_blank");
+        };
+      }
       newsContainer.appendChild(div);
     });
-
-    if (!window.counterApiLoaded) {
-      const script = document.createElement("script");
-      script.src = "https://counterapi.com/c.js";
-      script.async = true;
-      script.onload = disableCounterLinks;
-      document.body.appendChild(script);
-      window.counterApiLoaded = true;
-    } else {
-      disableCounterLinks();
-    }
-  }
-
-  function disableCounterLinks() {
-    setTimeout(() => {
-      document.querySelectorAll('.counterapi a').forEach(link => {
-        link.removeAttribute('href');
-        link.style.pointerEvents = 'none';
-        link.style.color = 'inherit';
-        link.style.textDecoration = 'none';
-        link.style.cursor = 'default';
-      });
-    }, 1000);
   }
 
   function showTrailer(url) {
