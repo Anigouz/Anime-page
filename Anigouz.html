@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AniGouz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background-color: rgba(0, 0, 0, 0.75);
+    }video.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: -1;
+}
+
+header {
+  background: rgba(0, 0, 0, 0.85);
+  padding: 15px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff6b6b;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+#animeList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.anime {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  width: 220px;
+  transition: transform 0.2s ease;
+}
+
+.anime:hover {
+  transform: scale(1.03);
+}
+
+.anime img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.anime h3 {
+  font-size: 16px;
+  margin: 10px;
+  height: 40px;
+  overflow: hidden;
+}
+
+.anime p {
+  font-size: 14px;
+  margin: 0 10px 10px;
+  color: #ccc;
+}
+
+.anime a.trailer {
+  display: block;
+  margin: 0 10px 15px;
+  padding: 8px;
+  background-color: #ff6b6b;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.anime a.trailer:hover {
+  background-color: #ff4949;
+}
+
+.menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  z-index: 10;
+}
+
+.menu button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#news, #home {
+  display: none;
+  padding: 20px;
+}
+
+#home.visible, #news.visible {
+  display: block;
+}
+
+#newsContent h3 {
+  color: #ff6b6b;
+  margin-bottom: 5px;
+}
+
+#newsContent p {
+  margin-bottom: 5px;
+  color: #ddd;
+}
+
+#newsContent .views {
+  font-size: 13px;
+  color: #ccc;
+  margin-bottom: 10px;
+  pointer-events: none;
+}
+
+#trailerPlayer {
+  display: none;
+  position: relative;
+  margin: 20px auto;
+  max-width: 720px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 20px #ff6b6b;
+  animation: pulseBorder 2s infinite;
+  border: 5px solid transparent;
+}
+
+@keyframes pulseBorder {
+  0% { border-color: #ff6b6b; }
+  25% { border-color: #6bffb5; }
+  50% { border-color: #6baaff; }
+  75% { border-color: #ffe76b; }
+  100% { border-color: #ff6b6b; }
+}
+
+#trailerPlayer iframe {
+  width: 100%;
+  height: 405px;
+  border: none;
+}
+
+#trailerBackBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: #ff6b6b;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body><video class="bg" autoplay muted loop>
+  <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
+</video><div class="overlay"></div><header>AniGouz</header><div id="trailerPlayer">
+  <button id="trailerBackBtn" onclick="hideTrailer()">← Back</button>
+  <iframe id="ytPlayer" allowfullscreen></iframe>
+</div><div id="home" class="visible">
+  <div id="animeList">Yuklanmoqda...</div>
+</div><div id="news">
+  <h2>Yangiliklar</h2>
+  <div id="newsContent">Yuklanmoqda...</div>
+</div><div class="menu">
+  <button onclick="showHome()">Home</button>
+  <button onclick="showNews()">News</button>
+</div><script type="application/json" id="newsData">
+[
+  {
+    "title": "Solo Leveling",
+    "description": "Sung Jin-Woo qaytmoqda! Endi u yanada kuchliroq.",
+    "mal_id": 52708
+  },
+  {
+    "title": "Bleach: TYBW Part 3",
+    "description": "Ichigo'ning yangi formasi va kuchli dushmanlar kutmoqda.",
+    "mal_id": 54492
+  },
+  {
+    "title": "Jujutsu Kaisen Season 3",
+    "description": "Gojo va Yuji sahnaga qaytmoqda. Qonli janglar oldinda!",
+    "mal_id": 55644
+  }
+]
+</script><script>
+  function setView(section) {
+    document.getElementById("home").classList.remove("visible");
+    document.getElementById("news").classList.remove("visible");
+    document.getElementById("trailerPlayer").style.display = "none";
+    if (section === 'home') {
+      document.getElementById("home").classList.add("visible");
+    } else if (section === 'news') {
+      document.getElementById("news").classList.add("visible");
+      loadNews();
+    } else if (section === 'trailer') {
+      document.getElementById("trailerPlayer").style.display = "block";
+    }
+  }
+
+  function showHome() {
+    history.pushState({view: 'home'}, '', '#home');
+    setView('home');
+  }
+
+  function showNews() {
+    history.pushState({view: 'news'}, '', '#news');
+    setView('news');
+  }
+
+  function loadNews() {
+    const jsonText = document.getElementById("newsData").textContent;
+    let data = [];
+    try {
+      data = JSON.parse(jsonText);
+    } catch (e) {
+      console.error("JSON parsingda xatolik:", e);
+      document.getElementById("newsContent").innerHTML = "<p>Xatolik yuz berdi!</p>";
+      return;
+    }
+
+    const newsContainer = document.getElementById("newsContent");
+    newsContainer.innerHTML = '';
+
+    data.forEach((item, index) => {
+      const uniqueKey = `news_${index + 1}`;
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h3>${item.title}</h3>
+        <p>${item.description}</p>
+        <div class="views counterapi" ns="anigo.uz" key="${uniqueKey}" label="views"></div>
+        <button onclick="showMore(${item.mal_id})" style="margin-bottom:10px;background:#6baaff;border:none;padding:6px 12px;color:white;border-radius:6px;cursor:pointer;">Batafsil</button>
+      `;
+      newsContainer.appendChild(div);
+    });
+
+    if (!window.counterApiLoaded) {
+      const script = document.createElement("script");
+      script.src = "https://counterapi.com/c.js";
+      script.async = true;
+      document.body.appendChild(script);
+      window.counterApiLoaded = true;
+    }
+  }
+
+  async function showMore(mal_id) {
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/anime/${mal_id}`);
+      const data = await res.json();
+      const anime = data.data;
+
+      const detailsHtml = `
+        <div id="detailsModal" style="position:fixed;top:0;left:0;width:100%;height:100vh;z-index:999;background:#000000e6;color:white;padding:20px;overflow:auto;">
+          <button onclick="document.getElementById('detailsModal').remove()" style="position:absolute;top:10px;right:10px;background:#ff6b6b;border:none;color:white;font-weight:bold;padding:6px 12px;border-radius:5px;">✕ Yopish</button>
+          <h2>${anime.title}</h2>
+          <img src="${anime.images.jpg.image_url}" style="width:100%;max-width:300px;border-radius:12px;margin:10px 0;">
+          <p><b>Status:</b> ${anime.status}</p>
+          <p><b>Chiqqan sana:</b> ${anime.aired.string}</p>
+          <p><b>Studio:</b> ${anime.studios.map(s => s.name).join(', ')}</p>
+          <p><b>Janrlar:</b> ${anime.genres.map(g => g.name).join(', ')}</p>
+          <p><b>Synopsis:</b> ${anime.synopsis || 'Yo‘q'}</p>
+        </div>
+      `;
+
+      const modal = document.createElement("div");
+      modal.innerHTML = detailsHtml;
+      document.body.appendChild(modal);
+
+    } catch (e) {
+      alert("Ma'lumot olishda xatolik: " + e.message);
+    }
+  }
+
+  function showTrailer(url) {
+    const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (!match) {
+      alert("Treyler topilmadi.");
+      return;
+    }
+    const videoId = match[1];
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+
+    history.pushState({view: 'trailer'}, '', '#trailer');
+    document.getElementById("ytPlayer").src = embedUrl;
+    setView('trailer');
+  }
+
+  function hideTrailer() {
+    document.getElementById("ytPlayer").src = "";
+    showHome();
+  }
+
+  window.onpopstate = function (event) {
+    if (!event.state) return;
+    setView(event.state.view);
+    if (event.state.view !== 'trailer') {
+      document.getElementById("ytPlayer").src = "";
+    }
+  };
+
+  fetch('https://api.jikan.moe/v4/seasons/upcoming')
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('animeList');
+      list.innerHTML = '';
+      data.data.forEach(a => {
+        const title = a.titles[0].title;
+        const trailerUrl = a.trailer && a.trailer.url ? a.trailer.url : null;
+
+        const div = document.createElement('div');
+        div.className = 'anime';
+        div.innerHTML = `
+          <img src="${a.images.jpg.image_url}" alt="${title}">
+          <h3>${title}</h3>
+          <p>${a.season || '?'} ${a.year || ''}</p>
+          ${trailerUrl ? `<a href="javascript:void(0)" onclick="showTrailer('${trailerUrl}')" class="trailer">▶ Treylerni Ko‘rish</a>` : `<span style="color:#888; margin:0 10px 10px; display:block;">Treyler yo‘q</span>`}
+        `;
+        list.appendChild(div);
+      });
+    })
+    .catch(err => {
+      document.getElementById('animeList').innerText = "Xatolik yuz berdi!";
+      console.error(err);
+    });
+</script></body>
+    </html>
