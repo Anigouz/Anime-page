@@ -366,37 +366,6 @@
       setView('trailer');
     }
   };
-  function setView(section) {
-    document.getElementById("home").classList.remove("visible");
-    document.getElementById("news").classList.remove("visible");
-
-    // Playerni har doim yashiramiz
-    document.getElementById("trailerPlayer").style.display = "none";
-
-    if (section === 'home') {
-      document.getElementById("home").classList.add("visible");
-    } else if (section === 'news') {
-      document.getElementById("news").classList.add("visible");
-    }
-  }
-
-  function showHome() {
-    setView('home');
-  }
-
-  function showNews() {
-    setView('news');
-  }
-
-  function playTrailer(ytId) {
-    document.getElementById("ytPlayer").src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
-    document.getElementById("trailerPlayer").style.display = "block";
-  }
-
-  function hideTrailer() {
-    document.getElementById("ytPlayer").src = "";
-    document.getElementById("trailerPlayer").style.display = "none";
-    }
-</script>
+  </script>
 </body>
   </html>
