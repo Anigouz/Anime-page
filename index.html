@@ -142,7 +142,7 @@ header {
 #newsContent .views {
   font-size: 13px;
   color: #ccc;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   pointer-events: none;
 }
 
@@ -186,15 +186,6 @@ header {
   cursor: pointer;
 }
 
-.sponsor {
-  margin: 20px 0;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 4px solid #6baaff;
-  color: #fff;
-  font-size: 14px;
-}
-
   </style>
 </head>
 <body><video class="bg" autoplay muted loop>
@@ -206,9 +197,6 @@ header {
   <div id="animeList">Yuklanmoqda...</div>
 </div><div id="news">
   <h2>Yangiliklar</h2>
-  <div class="sponsor">
-    <p><strong>🎯 Homiylik reklama:</strong> <a href="https://t.me/anigouz" target="_blank" style="color: #6baaff;">Telegram kanalimizga qo‘shiling!</a></p>
-  </div>
   <div id="newsContent">Yuklanmoqda...</div>
 </div><div class="menu">
   <button onclick="showHome()">Home</button>
@@ -216,16 +204,19 @@ header {
 </div><script type="application/json" id="newsData">
 [
   {
-    "title": "Solo Leveling Season 2",
-    "description": "Sung Jin-Woo qaytmoqda! Endi u yanada kuchliroq."
+    "title": "Solo Leveling",
+    "description": "Sung Jin-Woo qaytmoqda! Endi u yanada kuchliroq.",
+    "mal_id": 52708
   },
   {
     "title": "Bleach: TYBW Part 3",
-    "description": "Ichigo'ning yangi formasi va kuchli dushmanlar kutmoqda."
+    "description": "Ichigo'ning yangi formasi va kuchli dushmanlar kutmoqda.",
+    "mal_id": 54492
   },
   {
     "title": "Jujutsu Kaisen Season 3",
-    "description": "Gojo va Yuji sahnaga qaytmoqda. Qonli janglar oldinda!"
+    "description": "Gojo va Yuji sahnaga qaytmoqda. Qonli janglar oldinda!",
+    "mal_id": 55644
   }
 ]
 </script><script>
@@ -273,16 +264,47 @@ header {
       div.innerHTML = `
         <h3>${item.title}</h3>
         <p>${item.description}</p>
-        <div class="views">👁 ${Math.floor(Math.random() * 900 + 100)} marta ko‘rilgan</div>
+        <div class="views counterapi" ns="anigo.uz" key="${uniqueKey}" label="views"></div>
+        <button onclick="showMore(${item.mal_id})" style="margin-bottom:10px;background:#6baaff;border:none;padding:6px 12px;color:white;border-radius:6px;cursor:pointer;">Batafsil</button>
       `;
-      if (index === 0) {
-        div.style.cursor = "pointer";
-        div.onclick = () => {
-          window.open("https://t.me/Anigouz", "_blank");
-        };
-      }
       newsContainer.appendChild(div);
     });
+
+    if (!window.counterApiLoaded) {
+      const script = document.createElement("script");
+      script.src = "https://counterapi.com/c.js";
+      script.async = true;
+      document.body.appendChild(script);
+      window.counterApiLoaded = true;
+    }
+  }
+
+  async function showMore(mal_id) {
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/anime/${mal_id}`);
+      const data = await res.json();
+      const anime = data.data;
+
+      const detailsHtml = `
+        <div id="detailsModal" style="position:fixed;top:0;left:0;width:100%;height:100vh;z-index:999;background:#000000e6;color:white;padding:20px;overflow:auto;">
+          <button onclick="document.getElementById('detailsModal').remove()" style="position:absolute;top:10px;right:10px;background:#ff6b6b;border:none;color:white;font-weight:bold;padding:6px 12px;border-radius:5px;">✕ Yopish</button>
+          <h2>${anime.title}</h2>
+          <img src="${anime.images.jpg.image_url}" style="width:100%;max-width:300px;border-radius:12px;margin:10px 0;">
+          <p><b>Status:</b> ${anime.status}</p>
+          <p><b>Chiqqan sana:</b> ${anime.aired.string}</p>
+          <p><b>Studio:</b> ${anime.studios.map(s => s.name).join(', ')}</p>
+          <p><b>Janrlar:</b> ${anime.genres.map(g => g.name).join(', ')}</p>
+          <p><b>Synopsis:</b> ${anime.synopsis || 'Yo‘q'}</p>
+        </div>
+      `;
+
+      const modal = document.createElement("div");
+      modal.innerHTML = detailsHtml;
+      document.body.appendChild(modal);
+
+    } catch (e) {
+      alert("Ma'lumot olishda xatolik: " + e.message);
+    }
   }
 
   function showTrailer(url) {
@@ -337,4 +359,4 @@ header {
       console.error(err);
     });
 </script></body>
-  </html>
+    </html>
