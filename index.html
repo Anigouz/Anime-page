@@ -284,6 +284,88 @@
         setView('trailer');
       }
     };
-  </script>
+  <script>
+  function setView(section) {
+    document.getElementById("home").classList.remove("visible");
+    document.getElementById("news").classList.remove("visible");
+    document.getElementById("trailerPlayer").style.display = "none";
+
+    if (section === 'home') {
+      document.getElementById("home").classList.add("visible");
+    } else if (section === 'news') {
+      document.getElementById("news").classList.add("visible");
+    } else if (section === 'trailer') {
+      document.getElementById("trailerPlayer").style.display = "block";
+    }
+  }
+
+  function showHome() {
+    history.pushState({view: 'home'}, '', '#home');
+    setView('home');
+  }
+
+  function showNews() {
+    history.pushState({view: 'news'}, '', '#news');
+    setView('news');
+  }
+
+  function hideTrailer() {
+    document.getElementById("ytPlayer").src = "";
+    history.back(); // orqaga qaytish (history ichidan olib tashlaydi)
+  }
+
+  function playTrailer(ytId) {
+    document.getElementById("ytPlayer").src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+    history.pushState({ view: 'trailer' }, '', '#trailer');
+    setView('trailer');
+  }
+
+  async function loadAnimeList() {
+    const container = document.getElementById('animeList');
+    container.innerHTML = "Yuklanmoqda...";
+
+    try {
+      const res = await fetch("https://api.jikan.moe/v4/seasons/now");
+      const data = await res.json();
+      container.innerHTML = "";
+
+      data.data.forEach(anime => {
+        const div = document.createElement("div");
+        div.className = "anime";
+        div.innerHTML = `
+          <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
+          <h3>${anime.title}</h3>
+          ${anime.trailer && anime.trailer.youtube_id ? `
+            <button class="trailer" onclick="playTrailer('${anime.trailer.youtube_id}')">Trailer ko‘rish</button>
+          ` : `<p style="text-align:center;color:#aaa;">Trailer yo‘q</p>`}
+        `;
+        container.appendChild(div);
+      });
+    } catch (e) {
+      container.innerHTML = "<p>Xatolik yuz berdi!</p>";
+    }
+  }
+
+  // Sahifa yuklanganda home state ni tarixga yozamiz
+  window.addEventListener("DOMContentLoaded", () => {
+    history.replaceState({ view: 'home' }, '', '#home');
+    loadAnimeList();
+  });
+
+  window.onpopstate = function (event) {
+    const modal = document.getElementById('detailsModal');
+    if (modal) modal.remove();
+
+    if (!event.state) return;
+
+    if (event.state.view === 'news') {
+      setView('news');
+    } else if (event.state.view === 'home') {
+      setView('home');
+    } else if (event.state.view === 'trailer') {
+      setView('trailer');
+    }
+  };
+</script>
 </body>
   </html>
