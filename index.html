@@ -220,6 +220,7 @@ header {
   }
 ]
 </script><script>
+  <script>
   function setView(section) {
     document.getElementById("home").classList.remove("visible");
     document.getElementById("news").classList.remove("visible");
@@ -287,7 +288,7 @@ header {
 
       const detailsHtml = `
         <div id="detailsModal" style="position:fixed;top:0;left:0;width:100%;height:100vh;z-index:999;background:#000000e6;color:white;padding:20px;overflow:auto;">
-          <button onclick="document.getElementById('detailsModal').remove()" style="position:absolute;top:10px;right:10px;background:#ff6b6b;border:none;color:white;font-weight:bold;padding:6px 12px;border-radius:5px;">✕ Yopish</button>
+          <button onclick="closeModal()" style="position:absolute;top:10px;right:10px;background:#ff6b6b;border:none;color:white;font-weight:bold;padding:6px 12px;border-radius:5px;">✕ Yopish</button>
           <h2>${anime.title}</h2>
           <img src="${anime.images.jpg.image_url}" style="width:100%;max-width:300px;border-radius:12px;margin:10px 0;">
           <p><b>Status:</b> ${anime.status}</p>
@@ -302,11 +303,33 @@ header {
       modal.innerHTML = detailsHtml;
       document.body.appendChild(modal);
 
+      history.pushState({ view: 'details' }, '', '#details');
+
     } catch (e) {
       alert("Ma'lumot olishda xatolik: " + e.message);
     }
   }
 
+  function closeModal() {
+    const modal = document.getElementById('detailsModal');
+    if (modal) modal.remove();
+    showNews();
+  }
+  window.onpopstate = function (event) {
+    const modal = document.getElementById('detailsModal');
+    if (modal) modal.remove();
+
+    if (!event.state) return;
+
+    if (event.state.view === 'news') {
+      setView('news');
+    } else if (event.state.view === 'home') {
+      setView('home');
+    } else if (event.state.view === 'trailer') {
+      setView('trailer');
+    }
+  };
+</script>
   function showTrailer(url) {
     const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     if (!match) {
@@ -358,49 +381,5 @@ header {
       document.getElementById('animeList').innerText = "Xatolik yuz berdi!";
       console.error(err);
     });
-</script>
-function showNews() {
-    document.getElementById("news").classList.add("visible");
-    history.pushState({ view: 'news' }, '', '#news');
-  }
-
-  async function showMore(mal_id) {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime/${mal_id}`);
-      const data = await res.json();
-      const anime = data.data;
-      const modal = document.createElement("div");
-      modal.id = "detailsModal";
-      modal.style = "position:fixed;top:0;left:0;width:100%;height:100vh;z-index:999;background:#000000e6;color:white;padding:20px;overflow:auto;";
-      modal.innerHTML = \`
-        <button onclick="closeModal()" style="position:absolute;top:10px;right:10px;background:#ff6b6b;color:#fff;border:none;padding:8px;border-radius:5px;">✕ Yopish</button>
-        <h2>\${anime.title}</h2>
-        <img src="\${anime.images.jpg.image_url}" style="width:100%;max-width:300px;border-radius:12px;margin:10px 0;">
-        <p><b>Status:</b> \${anime.status}</p>
-        <p><b>Chiqqan sana:</b> \${anime.aired.string}</p>
-        <p><b>Studio:</b> \${anime.studios.map(s => s.name).join(', ')}</p>
-        <p><b>Janrlar:</b> \${anime.genres.map(g => g.name).join(', ')}</p>
-        <p><b>Synopsis:</b> \${anime.synopsis || 'Yo‘q'}</p>
-      \`;
-      document.body.appendChild(modal);
-      history.pushState({ view: 'details' }, '', '#details');
-    } catch (e) {
-      alert("Xatolik: " + e.message);
-    }
-  }
-
-  function closeModal() {
-    const modal = document.getElementById("detailsModal");
-    if (modal) modal.remove();
-    showNews();
-  }
-
-  window.onpopstate = function(event) {
-    const modal = document.getElementById("detailsModal");
-    if (modal) modal.remove();
-    if (event.state?.view === 'news') {
-      showNews();
-    }
-  }
-<script></body>
+</script></body>
   </html>
