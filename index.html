@@ -133,6 +133,23 @@
       display: block;
     }
 
+    #ads {
+      background: #222;
+      color: #ffce00;
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 2px dashed #555;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .views {
+      font-size: 13px;
+      color: #aaa;
+      margin: 5px 0 10px;
+    }
+
     #trailerPlayer {
       display: none;
       position: fixed;
@@ -196,6 +213,7 @@
 
   <div id="news">
     <h2>Yangiliklar</h2>
+    <div id="ads">📢 <b>Reklama joyi</b> — bu yerga homiylik kontent kiradi</div>
     <div id="newsContent">Yuklanmoqda...</div>
   </div>
 
@@ -203,6 +221,29 @@
     <button onclick="showHome()">Home</button>
     <button onclick="showNews()">News</button>
   </div>
+
+  <script type="application/json" id="newsData">
+  [
+    {
+      "title": "Solo Leveling",
+      "description": "Sung Jin-Woo qaytmoqda! Endi u yanada kuchliroq.",
+      "mal_id": 52708,
+      "telegram": "https://t.me/your_channel/1"
+    },
+    {
+      "title": "Bleach: TYBW Part 3",
+      "description": "Ichigo'ning yangi formasi va kuchli dushmanlar kutmoqda.",
+      "mal_id": 54492,
+      "telegram": "https://t.me/your_channel/2"
+    },
+    {
+      "title": "Jujutsu Kaisen Season 3",
+      "description": "Gojo va Yuji sahnaga qaytmoqda. Qonli janglar oldinda!",
+      "mal_id": 55644,
+      "telegram": "https://t.me/your_channel/3"
+    }
+  ]
+  </script>
 
   <script>
     function setView(section) {
@@ -214,30 +255,31 @@
         document.getElementById("home").classList.add("visible");
       } else if (section === 'news') {
         document.getElementById("news").classList.add("visible");
-      } else if (section === 'trailer') {
-        document.getElementById("trailerPlayer").style.display = "block";
       }
     }
 
     function showHome() {
-      history.pushState({view: 'home'}, '', '#home');
       setView('home');
     }
 
     function showNews() {
-      history.pushState({view: 'news'}, '', '#news');
       setView('news');
+      loadNews();
     }
 
     function hideTrailer() {
       document.getElementById("ytPlayer").src = "";
-      setView('home');
+      document.getElementById("trailerPlayer").style.display = "none";
+    }
+
+    function playTrailer(ytId) {
+      document.getElementById("ytPlayer").src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+      document.getElementById("trailerPlayer").style.display = "block";
     }
 
     async function loadAnimeList() {
       const container = document.getElementById('animeList');
       container.innerHTML = "Yuklanmoqda...";
-
       try {
         const res = await fetch("https://api.jikan.moe/v4/seasons/now");
         const data = await res.json();
@@ -260,30 +302,44 @@
       }
     }
 
-    function playTrailer(ytId) {
-      document.getElementById("ytPlayer").src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
-      history.pushState({ view: 'trailer' }, '', '#trailer');
-      setView('trailer');
+    function loadNews() {
+      const jsonText = document.getElementById("newsData").textContent;
+      let data = [];
+      try {
+        data = JSON.parse(jsonText);
+      } catch (e) {
+        document.getElementById("newsContent").innerHTML = "<p>Xatolik yuz berdi!</p>";
+        return;
+      }
+
+      const container = document.getElementById("newsContent");
+      container.innerHTML = "";
+
+      data.forEach((item, index) => {
+        const uniqueKey = `post_${item.mal_id}`;
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <div class="views counterapi" ns="anigouz" key="${uniqueKey}" label="views"></div>
+          <a href="${item.telegram}" target="_blank" style="display:inline-block;margin-bottom:10px;background:#6baaff;border:none;padding:6px 12px;color:white;border-radius:6px;text-decoration:none;font-weight:bold;">Batafsil</a>
+        `;
+        container.appendChild(div);
+      });
+
+      if (!window.counterApiLoaded) {
+        const script = document.createElement("script");
+        script.src = "https://counterapi.com/c.js";
+        script.async = true;
+        document.body.appendChild(script);
+        window.counterApiLoaded = true;
+      }
     }
 
     window.addEventListener("DOMContentLoaded", () => {
       loadAnimeList();
     });
-
-    window.onpopstate = function (event) {
-      const modal = document.getElementById('detailsModal');
-      if (modal) modal.remove();
-
-      if (!event.state) return;
-
-      if (event.state.view === 'news') {
-        setView('news');
-      } else if (event.state.view === 'home') {
-        setView('home');
-      } else if (event.state.view === 'trailer') {
-        setView('trailer');
-      }
-    };
   </script>
+  <script src="https://counterapi.com/c.js" async></script>
 </body>
-</html>
+  </html>
