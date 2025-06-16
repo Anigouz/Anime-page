@@ -1,106 +1,324 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AniGouz</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Poppins',sans-serif;color:#fff;background:#000;overflow-x:hidden;}
-    video.bg{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.5);z-index:-1;}
-    header,nav.bottom{position:fixed;width:100%;background:rgba(0,0,0,0.7);z-index:2;}
-    header{top:0;padding:10px;text-align:center;font-size:1.8rem;font-weight:600;}
-    nav.bottom{bottom:0;display:flex;justify-content:space-around;padding:8px 0;}
-    nav.bottom button, header button{background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;}
-    .section{display:none;padding:80px 20px 60px;}
-    .active{display:block;}
-    .anime-card{background:rgba(255,255,255,0.1);margin:10px 0;padding:15px;border-radius:8px;}
-    .anime-card h3{margin-bottom:8px;}
-    .anime-card img{width:100%;border-radius:6px;}
-    .trailer-btn{display:inline-block;margin:10px 0;padding:6px 12px;background:#ff6b6b;color:#fff;border:none;border-radius:6px;cursor:pointer;}
-    #trailerModal{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);display:none;justify-content:center;align-items:center;z-index:3;}
-    #trailerModal iframe{width:90%;max-width:720px;height:56vw;max-height:405px;border:none;border-radius:8px;}
-    #trailerModal .close{position:absolute;top:20px;right:20px;font-size:2rem;color:#fff;cursor:pointer;}
-    .sponsor{margin:20px auto;padding:10px;background:#222;border:2px dashed #888;text-align:center;border-radius:8px;}
-    .news-item{background:rgba(255,255,255,0.1);padding:12px;margin:10px 0;border-radius:6px;}
-    .view-count{font-size:0.9rem;color:#ccc;margin-top:6px;}
-    @media (min-width:600px){.anime-card{display:flex;gap:10px;} .anime-card img{width:120px;height:180px;object-fit:cover;}}
+    /* Body va umumiy stil */
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Video fonni o‘rnatish */
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1; /* Video pastki qatlamda bo‘ladi */
+    }
+
+    /* Qora overlay */
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6); /* 0.6 o‘tkazuvchanlikda qora fon */
+      z-index: 1;
+    }
+
+    /* Sahifa kontenti */
+    header, footer { 
+      background: #222; 
+      color: white; 
+      text-align: center; 
+      padding: 1rem; 
+      z-index: 2; 
+    }
+    nav a { 
+      color: white; 
+      margin: 0 10px; 
+      cursor: pointer; 
+      text-decoration: none; 
+    }
+    .container { 
+      max-width: 900px; 
+      margin: auto; 
+      padding: 20px; 
+      z-index: 2; 
+    }
+    .trailer, .news-item { 
+      background: white; 
+      padding: 15px; 
+      border-radius: 8px; 
+      margin-bottom: 15px; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    }
+    .trailer img { 
+      width: 100%; 
+      cursor: pointer; 
+      border-radius: 8px; 
+    }
+    .news-item img { 
+      width: 100%; 
+      border-radius: 8px; 
+    }
+    .ad-banner { 
+      background: #ddd; 
+      text-align: center; 
+      padding: 20px; 
+      margin: 30px 0; 
+      font-weight: bold; 
+    }
+    #video-player { 
+      display: none; 
+      text-align: center; 
+      margin-top: 20px; 
+    }
+    iframe { 
+      width: 100%; 
+      height: 500px; 
+      border: none; 
+      border-radius: 10px; 
+    }
+    #home, #news { 
+      display: none; 
+    }
+    .admin-panel { 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 8px; 
+      margin-top: 20px; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    }
+    .admin-panel input, .admin-panel textarea { 
+      width: 100%; 
+      padding: 10px; 
+      margin: 5px 0; 
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+    }
+    .admin-panel button { 
+      padding: 10px 15px; 
+      background-color: #222; 
+      color: white; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+    }
+    .login-panel { 
+      display: none; 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 8px; 
+      margin-top: 20px; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    }
+    .login-panel input { 
+      width: 100%; 
+      padding: 10px; 
+      margin: 5px 0; 
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+    }
+    .login-panel button { 
+      padding: 10px 15px; 
+      background-color: #222; 
+      color: white; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+    }
   </style>
 </head>
 <body>
 
-<video class="bg" autoplay muted loop src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media"/>
+<!-- Background Video -->
+<video id="bg-video" autoplay muted loop>
+  <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4"> <!-- O'zingizning video linkini kiriting -->
+  Your browser does not support the video tag.
+</video>
+
+<!-- Overlay -->
+<div id="overlay"></div>
+
+<!-- Header -->
 <header>
-  AniGouz
-  <button style="position:absolute;right:20px;top:12px;" onclick="toggleSection('news')">News</button>
+  <h1>AniGouz</h1>
+  <nav>
+    <a onclick="showSection('home')">Home</a>
+    <a onclick="showSection('news')">News</a>
+    <a onclick="showSection('login')">Admin Login</a> <!-- Admin Login link -->
+  </nav>
 </header>
 
-<main>
-  <section id="home" class="section active">
-    <div class="sponsor">👑 Bu yerda homiy uchun banner bo‘ladi</div>
-    <div id="animeList">Yuklanmoqda...</div>
-  </section>
-
-  <section id="news" class="section">
-    <h2>Yangiliklar</h2>
-    <div id="newsList">
-      <div class="news-item">Yangiliklar hali mavjud emas.</div>
-    </div>
-  </section>
-</main>
-
-<nav class="bottom">
-  <button onclick="toggleSection('home')">🏠 Home</button>
-  <button onclick="toggleSection('news')">📰 News</button>
-</nav>
-
-<div id="trailerModal">
-  <span class="close" onclick="closeTrailer()">×</span>
-  <iframe src="" allowfullscreen></iframe>
+<!-- Video Player -->
+<div id="video-player">
+  <div class="container">
+    <iframe id="yt-frame" allowfullscreen></iframe>
+  </div>
 </div>
 
+<!-- Home Section -->
+<div id="home" class="container">
+  <h2>Latest Anime Trailers</h2>
+  <div id="trailers"></div>
+</div>
+
+<!-- News Section -->
+<div id="news" class="container">
+  <h2>Latest News</h2>
+  <div id="news-list"></div>
+</div>
+
+<!-- Admin Login Section -->
+<div id="login" class="container login-panel">
+  <h2>Enter Admin Password</h2>
+  <input type="password" id="admin-password" placeholder="Enter Admin Password"/>
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- Admin Section -->
+<div id="admin" class="container admin-panel">
+  <h2>Add New Post</h2>
+  <input type="text" id="new-title" placeholder="Post Title"/>
+  <input type="text" id="new-image" placeholder="Post Image URL"/>
+  <textarea id="new-description" placeholder="Post Description"></textarea>
+  <button onclick="addNewsPost()">Add Post</button>
+</div>
+
+<!-- Ad Banner -->
+<div class="ad-banner">
+  Bu yerda sizning reklamangiz bo'lishi mumkin!
+</div>
+
+<!-- Footer -->
+<footer>
+  &copy; 2025 AniGouz. Barcha huquqlar himoyalangan.
+</footer>
+
 <script>
-  function toggleSection(id){
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+  const newsDataKey = "newsData"; // Local storage da saqlash uchun kalit
+  const adminPassword = "anigouzadmin"; // Admin paroli (istalgan tarzda o'zgartiring)
+
+  // Initial data loading
+  window.onload = () => {
+    showSection('home');
+    loadTrailers();
+    loadNews();
+    checkAdminLogin();
+  };
+
+  // Show specific sections
+  function showSection(section) {
+    document.getElementById("home").style.display = "none";
+    document.getElementById("news").style.display = "none";
+    document.getElementById("admin").style.display = "none";
+    document.getElementById("video-player").style.display = "none";
+    document.getElementById("login").style.display = "none";
+    if (section === 'home') document.getElementById("home").style.display = "block";
+    else if (section === 'news') document.getElementById("news").style.display = "block";
+    else if (section === 'admin') document.getElementById("admin").style.display = "block";
+    else if (section === 'login') document.getElementById("login").style.display = "block";
   }
 
-  async function loadAnime(){
-    const res = await fetch('https://api.jikan.moe/v4/seasons/upcoming');
-    const json = await res.json();
-    const list = document.getElementById('animeList');
-    list.innerHTML = '';
-    json.data.slice(0,6).forEach(a=>{
-      const vid = a.trailer?.youtube_id;
-      const div = document.createElement('div');
-      div.className = 'anime-card';
-      div.innerHTML = `
-        <img src="${a.images.jpg.image_url}" alt="${a.titles[0].title}" />
-        <div>
-          <h3>${a.titles[0].title}</h3>
-          <button class="trailer-btn" onclick="openTrailer('${vid}')">▶ Treyler</button>
-          <div class="view-count" id="vc-${a.mal_id}">Ko‘rishlar: ...</div>
-        </div>`;
-      list.appendChild(div);
-      fetch(`https://api.countapi.xyz/hit/anigouz/${a.mal_id}`)
-        .then(r=>r.json())
-        .then(c=>document.getElementById(`vc-${a.mal_id}`).innerText = 'Ko‘rishlar: '+c.value);
+  // Login as admin (password validation)
+  function login() {
+    const password = document.getElementById('admin-password').value;
+    if (password === adminPassword) {
+      localStorage.setItem("adminLoggedIn", "true"); // Set admin logged in status
+      showSection('admin');
+    } else {
+      alert("Incorrect password!");
+    }
+  }
+
+  // Check if admin is logged in
+  function checkAdminLogin() {
+    const isLoggedIn = localStorage.getItem("adminLoggedIn");
+    if (isLoggedIn === "true") {
+      showSection('admin');
+    }
+  }
+
+  // Trailerni o‘ynatish
+  function playTrailer(videoId) {
+    document.getElementById("home").style.display = "none";
+    document.getElementById("news").style.display = "none";
+    document.getElementById("video-player").style.display = "block";
+    document.getElementById("yt-frame").src = `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  // Jikan API orqali anime treylerlarini olish
+  async function loadTrailers() {
+    const res = await fetch("https://api.jikan.moe/v4/anime?q=trailer&limit=6");
+    const data = await res.json();
+    const container = document.getElementById("trailers");
+    container.innerHTML = '';
+    data.data.forEach(anime => {
+      if (anime.trailer?.youtube_id) {
+        const div = document.createElement('div');
+        div.className = 'trailer';
+        div.innerHTML = `
+          <h3>${anime.title}</h3>
+          <img src="${anime.trailer.images?.maximum || anime.images.jpg.image_url}" alt="${anime.title}" onclick="playTrailer('${anime.trailer.youtube_id}')"/>
+        `;
+        container.appendChild(div);
+      }
     });
   }
 
-  function openTrailer(id){
-    if(!id) return alert('Treyler topilmadi');
-    document.querySelector('#trailerModal iframe').src = 'https://www.youtube.com/embed/'+id+'?autoplay=1';
-    document.getElementById('trailerModal').style.display = 'flex';
-  }
-  function closeTrailer(){
-    document.getElementById('trailerModal').style.display = 'none';
-    document.querySelector('#trailerModal iframe').src = '';
+  // Yangiliklarni yuklash (localStorage)
+  function loadNews() {
+    const storedNews = JSON.parse(localStorage.getItem(newsDataKey)) || [];
+    const container = document.getElementById("news-list");
+    container.innerHTML = '';
+    storedNews.forEach(post => {
+      const div = document.createElement('div');
+      div.className = 'news-item';
+      div.innerHTML = `
+        <h3>${post.title}</h3>
+        <img src="${post.image}" alt="${post.title}">
+        <p>${post.description}</p>
+        <p><strong>Ko'rishlar:</strong> <span id="view-${post.id}">${post.views}</span></p>
+      `;
+      container.appendChild(div);
+      setTimeout(() => {
+        let el = document.getElementById(`view-${post.id}`);
+        el.innerText = parseInt(el.innerText) + 1;
+      }, 1000);
+    });
   }
 
-  document.addEventListener('DOMContentLoaded',loadAnime);
+  // Yangilik qo‘shish
+  function addNewsPost() {
+    const title = document.getElementById('new-title').value;
+    const image = document.getElementById('new-image').value;
+    const description = document.getElementById('new-description').value;
+    if (title && image && description) {
+      const newPost = {
+        id: Date.now(),
+        title: title,
+        image: image,
+        description: description,
+        views: 0
+      };
+      const storedNews = JSON.parse(localStorage.getItem(newsDataKey)) || [];
+      storedNews.push(newPost);
+      localStorage.setItem(newsDataKey, JSON.stringify(storedNews));
+      loadNews();
+    }
+  }
 </script>
 
 </body>
-</html>
+  </html>
+  
