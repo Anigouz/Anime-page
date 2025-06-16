@@ -209,7 +209,7 @@
     "mal_id": 55644
   }
 ]
-
+</script><script>
   function setView(section) {
     document.getElementById("home").classList.remove("visible");
     document.getElementById("news").classList.remove("visible");
@@ -227,11 +227,6 @@
   function showHome() {
     history.pushState({view: 'home'}, '', '#home');
     setView('home');
-  }
-
-  function showNews() {
-    history.pushState({view: 'news'}, '', '#news');
-    setView('news');
   }
 
   function showNews() {
@@ -277,7 +272,7 @@
       showNews();
     }
   };
-  
+
   function showTrailer(url) {
     const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     if (!match) {
@@ -303,7 +298,7 @@
     if (event.state.view !== 'trailer') {
       document.getElementById("ytPlayer").src = "";
     }
-  };
+  }
 
   fetch('https://api.jikan.moe/v4/seasons/upcoming')
     .then(res => res.json())
