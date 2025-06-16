@@ -1,324 +1,354 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AniGouz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
-    /* Body va umumiy stil */
-    body { 
-      font-family: Arial, sans-serif; 
-      margin: 0; 
-      padding: 0;
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
       overflow-x: hidden;
+      background-color: rgba(0, 0, 0, 0.75);
     }
 
-    /* Video fonni o‘rnatish */
-    #bg-video {
+    video.bg {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
-      z-index: -1; /* Video pastki qatlamda bo‘ladi */
+      z-index: -2;
     }
 
-    /* Qora overlay */
-    #overlay {
-      position: absolute;
+    .overlay {
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6); /* 0.6 o‘tkazuvchanlikda qora fon */
-      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.75);
+      z-index: -1;
     }
 
-    /* Sahifa kontenti */
-    header, footer { 
-      background: #222; 
-      color: white; 
-      text-align: center; 
-      padding: 1rem; 
-      z-index: 2; 
+    header {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff6b6b;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    nav a { 
-      color: white; 
-      margin: 0 10px; 
-      cursor: pointer; 
-      text-decoration: none; 
+
+    #animeList {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
     }
-    .container { 
-      max-width: 900px; 
-      margin: auto; 
-      padding: 20px; 
-      z-index: 2; 
+
+    .anime {
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      width: 220px;
+      transition: transform 0.2s ease;
     }
-    .trailer, .news-item { 
-      background: white; 
-      padding: 15px; 
-      border-radius: 8px; 
-      margin-bottom: 15px; 
-      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+
+    .anime:hover {
+      transform: scale(1.03);
     }
-    .trailer img { 
-      width: 100%; 
-      cursor: pointer; 
-      border-radius: 8px; 
+
+    .anime img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
     }
-    .news-item img { 
-      width: 100%; 
-      border-radius: 8px; 
+
+    .anime h3 {
+      font-size: 16px;
+      margin: 10px;
+      height: 40px;
+      overflow: hidden;
     }
-    .ad-banner { 
-      background: #ddd; 
-      text-align: center; 
-      padding: 20px; 
-      margin: 30px 0; 
-      font-weight: bold; 
+
+    .anime p {
+      font-size: 14px;
+      margin: 0 10px 10px;
+      color: #ccc;
     }
-    #video-player { 
-      display: none; 
-      text-align: center; 
-      margin-top: 20px; 
+
+    .anime a.trailer {
+      display: block;
+      margin: 0 10px 15px;
+      padding: 8px;
+      background-color: #ff6b6b;
+      color: white;
+      text-align: center;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
     }
-    iframe { 
-      width: 100%; 
-      height: 500px; 
-      border: none; 
-      border-radius: 10px; 
+
+    .anime a.trailer:hover {
+      background-color: #ff4949;
     }
-    #home, #news { 
-      display: none; 
+
+    .menu {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 10;
     }
-    .admin-panel { 
-      background: #fff; 
-      padding: 20px; 
-      border-radius: 8px; 
-      margin-top: 20px; 
-      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+
+    .menu button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .admin-panel input, .admin-panel textarea { 
-      width: 100%; 
-      padding: 10px; 
-      margin: 5px 0; 
-      border: 1px solid #ccc; 
-      border-radius: 5px; 
+
+    #news, #home {
+      display: none;
+      padding: 20px;
     }
-    .admin-panel button { 
-      padding: 10px 15px; 
-      background-color: #222; 
-      color: white; 
-      border: none; 
-      border-radius: 5px; 
-      cursor: pointer; 
+
+    #home.visible, #news.visible {
+      display: block;
     }
-    .login-panel { 
-      display: none; 
-      background: #fff; 
-      padding: 20px; 
-      border-radius: 8px; 
-      margin-top: 20px; 
-      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+
+    #newsContent h3 {
+      color: #ff6b6b;
+      margin-bottom: 5px;
     }
-    .login-panel input { 
-      width: 100%; 
-      padding: 10px; 
-      margin: 5px 0; 
-      border: 1px solid #ccc; 
-      border-radius: 5px; 
+
+    #newsContent p {
+      margin-bottom: 5px;
+      color: #ddd;
     }
-    .login-panel button { 
-      padding: 10px 15px; 
-      background-color: #222; 
-      color: white; 
-      border: none; 
-      border-radius: 5px; 
-      cursor: pointer; 
+
+    #newsContent .views {
+      font-size: 13px;
+      color: #ccc;
+      margin-bottom: 10px;
+      pointer-events: none;
+    }
+
+    #trailerPlayer {
+      display: none;
+      position: relative;
+      margin: 20px auto;
+      max-width: 720px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 20px #ff6b6b;
+      animation: pulseBorder 2s infinite;
+      border: 5px solid transparent;
+    }
+
+    @keyframes pulseBorder {
+      0% { border-color: #ff6b6b; }
+      25% { border-color: #6bffb5; }
+      50% { border-color: #6baaff; }
+      75% { border-color: #ffe76b; }
+      100% { border-color: #ff6b6b; }
+    }
+
+    #trailerPlayer iframe {
+      width: 100%;
+      height: 405px;
+      border: none;
+    }
+
+    #trailerBackBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      background: #ff6b6b;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-
-<!-- Background Video -->
-<video id="bg-video" autoplay muted loop>
-  <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4"> <!-- O'zingizning video linkini kiriting -->
-  Your browser does not support the video tag.
-</video>
-
-<!-- Overlay -->
-<div id="overlay"></div>
-
-<!-- Header -->
-<header>
-  <h1>AniGouz</h1>
-  <nav>
-    <a onclick="showSection('home')">Home</a>
-    <a onclick="showSection('news')">News</a>
-    <a onclick="showSection('login')">Admin Login</a> <!-- Admin Login link -->
-  </nav>
-</header>
-
-<!-- Video Player -->
-<div id="video-player">
-  <div class="container">
-    <iframe id="yt-frame" allowfullscreen></iframe>
+  <video class="bg" autoplay muted loop>
+    <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <header>AniGouz</header>
+  <div id="trailerPlayer">
+    <button id="trailerBackBtn" onclick="hideTrailer()">← Back</button>
+    <iframe id="ytPlayer" allowfullscreen></iframe>
   </div>
-</div>
+  <div id="home" class="visible">
+    <div id="animeList">Yuklanmoqda...</div>
+  </div>
+  <div id="news">
+    <h2>Yangiliklar</h2>
+    <div id="newsContent">Yuklanmoqda...</div>
+  </div>
+  <div class="menu">
+    <button onclick="showHome()">Home</button>
+    <button onclick="showNews()">News</button>
+  </div>
 
-<!-- Home Section -->
-<div id="home" class="container">
-  <h2>Latest Anime Trailers</h2>
-  <div id="trailers"></div>
-</div>
-
-<!-- News Section -->
-<div id="news" class="container">
-  <h2>Latest News</h2>
-  <div id="news-list"></div>
-</div>
-
-<!-- Admin Login Section -->
-<div id="login" class="container login-panel">
-  <h2>Enter Admin Password</h2>
-  <input type="password" id="admin-password" placeholder="Enter Admin Password"/>
-  <button onclick="login()">Login</button>
-</div>
-
-<!-- Admin Section -->
-<div id="admin" class="container admin-panel">
-  <h2>Add New Post</h2>
-  <input type="text" id="new-title" placeholder="Post Title"/>
-  <input type="text" id="new-image" placeholder="Post Image URL"/>
-  <textarea id="new-description" placeholder="Post Description"></textarea>
-  <button onclick="addNewsPost()">Add Post</button>
-</div>
-
-<!-- Ad Banner -->
-<div class="ad-banner">
-  Bu yerda sizning reklamangiz bo'lishi mumkin!
-</div>
-
-<!-- Footer -->
-<footer>
-  &copy; 2025 AniGouz. Barcha huquqlar himoyalangan.
-</footer>
-
-<script>
-  const newsDataKey = "newsData"; // Local storage da saqlash uchun kalit
-  const adminPassword = "anigouzadmin"; // Admin paroli (istalgan tarzda o'zgartiring)
-
-  // Initial data loading
-  window.onload = () => {
-    showSection('home');
-    loadTrailers();
-    loadNews();
-    checkAdminLogin();
-  };
-
-  // Show specific sections
-  function showSection(section) {
-    document.getElementById("home").style.display = "none";
-    document.getElementById("news").style.display = "none";
-    document.getElementById("admin").style.display = "none";
-    document.getElementById("video-player").style.display = "none";
-    document.getElementById("login").style.display = "none";
-    if (section === 'home') document.getElementById("home").style.display = "block";
-    else if (section === 'news') document.getElementById("news").style.display = "block";
-    else if (section === 'admin') document.getElementById("admin").style.display = "block";
-    else if (section === 'login') document.getElementById("login").style.display = "block";
-  }
-
-  // Login as admin (password validation)
-  function login() {
-    const password = document.getElementById('admin-password').value;
-    if (password === adminPassword) {
-      localStorage.setItem("adminLoggedIn", "true"); // Set admin logged in status
-      showSection('admin');
-    } else {
-      alert("Incorrect password!");
-    }
-  }
-
-  // Check if admin is logged in
-  function checkAdminLogin() {
-    const isLoggedIn = localStorage.getItem("adminLoggedIn");
-    if (isLoggedIn === "true") {
-      showSection('admin');
-    }
-  }
-
-  // Trailerni o‘ynatish
-  function playTrailer(videoId) {
-    document.getElementById("home").style.display = "none";
-    document.getElementById("news").style.display = "none";
-    document.getElementById("video-player").style.display = "block";
-    document.getElementById("yt-frame").src = `https://www.youtube.com/embed/${videoId}`;
-  }
-
-  // Jikan API orqali anime treylerlarini olish
-  async function loadTrailers() {
-    const res = await fetch("https://api.jikan.moe/v4/anime?q=trailer&limit=6");
-    const data = await res.json();
-    const container = document.getElementById("trailers");
-    container.innerHTML = '';
-    data.data.forEach(anime => {
-      if (anime.trailer?.youtube_id) {
-        const div = document.createElement('div');
-        div.className = 'trailer';
-        div.innerHTML = `
-          <h3>${anime.title}</h3>
-          <img src="${anime.trailer.images?.maximum || anime.images.jpg.image_url}" alt="${anime.title}" onclick="playTrailer('${anime.trailer.youtube_id}')"/>
-        `;
-        container.appendChild(div);
+  <script type="application/json" id="newsData">
+    [
+      {
+        "title": "Solo Leveling",
+        "description": "Sung Jin-Woo qaytmoqda! Endi u yanada kuchliroq.",
+        "mal_id": 52708
+      },
+      {
+        "title": "Bleach: TYBW Part 3",
+        "description": "Ichigo'ning yangi formasi va kuchli dushmanlar kutmoqda.",
+        "mal_id": 54492
+      },
+      {
+        "title": "Jujutsu Kaisen Season 3",
+        "description": "Gojo va Yuji sahnaga qaytmoqda. Qonli janglar oldinda!",
+        "mal_id": 55644
       }
-    });
-  }
+    ]
+  </script>
 
-  // Yangiliklarni yuklash (localStorage)
-  function loadNews() {
-    const storedNews = JSON.parse(localStorage.getItem(newsDataKey)) || [];
-    const container = document.getElementById("news-list");
-    container.innerHTML = '';
-    storedNews.forEach(post => {
-      const div = document.createElement('div');
-      div.className = 'news-item';
-      div.innerHTML = `
-        <h3>${post.title}</h3>
-        <img src="${post.image}" alt="${post.title}">
-        <p>${post.description}</p>
-        <p><strong>Ko'rishlar:</strong> <span id="view-${post.id}">${post.views}</span></p>
-      `;
-      container.appendChild(div);
-      setTimeout(() => {
-        let el = document.getElementById(`view-${post.id}`);
-        el.innerText = parseInt(el.innerText) + 1;
-      }, 1000);
-    });
-  }
-
-  // Yangilik qo‘shish
-  function addNewsPost() {
-    const title = document.getElementById('new-title').value;
-    const image = document.getElementById('new-image').value;
-    const description = document.getElementById('new-description').value;
-    if (title && image && description) {
-      const newPost = {
-        id: Date.now(),
-        title: title,
-        image: image,
-        description: description,
-        views: 0
-      };
-      const storedNews = JSON.parse(localStorage.getItem(newsDataKey)) || [];
-      storedNews.push(newPost);
-      localStorage.setItem(newsDataKey, JSON.stringify(storedNews));
-      loadNews();
+  <script>
+    function setView(section) {
+      document.getElementById("home").classList.remove("visible");
+      document.getElementById("news").classList.remove("visible");
+      document.getElementById("trailerPlayer").style.display = "none";
+      
+      if (section === 'home') {
+        document.getElementById("home").classList.add("visible");
+      } else if (section === 'news') {
+        document.getElementById("news").classList.add("visible");
+        loadNews();
+      } else if (section === 'trailer') {
+        document.getElementById("trailerPlayer").style.display = "block";
+      }
     }
-  }
-</script>
 
+    function showHome() {
+      history.pushState({view: 'home'}, '', '#home');
+      setView('home');
+    }
+
+    function showNews() {
+      history.pushState({view: 'news'}, '', '#news');
+      setView('news');
+    }
+
+    function hideTrailer() {
+      history.pushState({view: 'home'}, '', '#home');
+      setView('home');
+    }
+
+    function loadNews() {
+      const jsonText = document.getElementById("newsData").textContent;
+      let data = [];
+      try {
+        data = JSON.parse(jsonText);
+      } catch (e) {
+        console.error("JSON parsingda xatolik:", e);
+        document.getElementById("newsContent").innerHTML = "<p>Xatolik yuz berdi!</p>";
+        return;
+      }
+
+      const newsContainer = document.getElementById("newsContent");
+      newsContainer.innerHTML = '';
+
+      data.forEach((item, index) => {
+        const uniqueKey = `news_${index + 1}`;
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <div class="views counterapi" ns="anigo.uz" key="${uniqueKey}" label="views"></div>
+          <button onclick="showMore(${item.mal_id})" style="margin-bottom:10px;background:#6baaff;border:none;padding:6px 12px;color:white;border-radius:6px;cursor:pointer;">Batafsil</button>
+        `;
+        newsContainer.appendChild(div);
+      });
+
+      if (!window.counterApiLoaded) {
+        const script = document.createElement("script");
+        script.src = "https://counterapi.com/c.js";
+        script.async = true;
+        document.body.appendChild(script);
+        window.counterApiLoaded = true;
+      }
+    }
+
+    async function showMore(mal_id) {
+      try {
+        const res = await fetch(`https://api.jikan.moe/v4/anime/${mal_id}`);
+        const data = await res.json();
+        const anime = data.data;
+
+        const detailsHtml = `
+          <div id="detailsModal" style="position:fixed;top:0;left:0;width:100%;height:100vh;z-index:999;background:#000000e6;color:white;padding:20px;overflow:auto;">
+            <button onclick="closeModal()" style="position:absolute;top:10px;right:10px;background:#ff6b6b;border:none;color:white;font-weight:bold;padding:6px 12px;border-radius:5px;">✕ Yopish</button>
+            <h2>${anime.title}</h2>
+            <img src="${anime.images.jpg.image_url}" style="width:100%;max-width:300px;border-radius:12px;margin:10px 0;">
+            <p><b>Status:</b> ${anime.status}</p>
+            <p><b>Chiqqan sana:</b> ${anime.aired.string}</p>
+            <p><b>Studio:</b> ${anime.studios.map(s => s.name).join(', ')}</p>
+            <p><b>Janrlar:</b> ${anime.genres.map(g => g.name).join(', ')}</p>
+            <p><b>Synopsis:</b> ${anime.synopsis || 'Yo‘q'}</p>
+          </div>
+        `;
+        
+        const modal = document.createElement("div");
+        modal.innerHTML = detailsHtml;
+        document.body.appendChild(modal);
+
+        history.pushState({ view: 'details' }, '', '#details');
+        
+      } catch (e) {
+        alert("Ma'lumot olishda xatolik: " + e.message);
+      }
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('detailsModal');
+      if (modal) modal.remove();
+      showNews();
+    }
+
+    window.onpopstate = function (event) {
+      const modal = document.getElementById('detailsModal');
+      if (modal) modal.remove();
+
+      if (!event.state) return;
+
+      if (event.state.view === 'news') {
+        setView('news');
+      } else if (event.state.view === 'home') {
+        setView('home');
+      } else if (event.state.view === 'trailer') {
+        setView('trailer');
+      }
+    };
+  </script>
 </body>
-  </html>
+    </html>
   
