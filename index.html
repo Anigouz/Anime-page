@@ -4,31 +4,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AniGouz</title>
   <style>
+    * { box-sizing: border-box; }
     body { margin: 0; font-family: sans-serif; background: #111; color: white; }
-    video.bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      object-fit: cover;
-      z-index: -2;
-    }
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: -1;
-    }
+    video.bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: -1; }
     header { text-align: center; padding: 1em; background: #222; font-size: 24px; }
-    .menu { display: flex; justify-content: space-around; background: #333; padding: 10px; }
-    .menu button { background: #00d1ff; color: black; border: none; padding: 8px 16px; cursor: pointer; border-radius: 6px; font-weight: bold; }
-    #home, #news, #player, #auth { display: none; padding: 20px; }
-    .visible { display: block !important; }
-    .anime, .episode { background: #222; margin: 10px; padding: 10px; border-radius: 8px; }
+    .container { padding: 20px; max-width: 900px; margin: auto; }
+    input, button { padding: 10px; margin: 5px 0; width: 100%; border: none; border-radius: 6px; }
+    input { background: #222; color: white; }
+    button { background: #00d1ff; color: black; font-weight: bold; cursor: pointer; }
+    .anime, .episode { background: #222; margin: 10px 0; padding: 10px; border-radius: 8px; }
     .anime img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; }
-    .anime button, .episode button { margin-top: 10px; background: #00d1ff; border: none; padding: 8px; cursor: pointer; border-radius: 6px; font-weight: bold; }
     #player iframe { width: 100%; height: 400px; border: none; border-radius: 10px; box-shadow: 0 0 20px cyan; }
-    input { padding: 8px; margin: 4px 0; width: 100%; }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -36,28 +23,27 @@
 </head>
 <body>
   <video class="bg" autoplay muted loop playsinline>
-    <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4" />
+    <source src="https://archive.org/download/VID_20250617_010217_464/VID_20250617_010217_464.mp4" type="video/mp4" />
   </video>
   <div class="overlay"></div>
   <header>AniGouz</header>
-  <div class="menu">
-    <button onclick="setView('home')">Home</button>
-    <button onclick="setView('news')">News</button>
-    <button onclick="setView('auth')">Login</button>
-  </div>  <div id="auth">
-    <h3>Login / Ro'yxatdan o'tish</h3>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Parol" />
-    <button onclick="login()">Kirish</button>
-    <button onclick="register()">Ro'yxatdan o'tish</button>
-  </div>  <div id="home" class="visible">
-    <div id="animeList">Yuklanmoqda...</div>
-    <div id="episodeList"></div>
-  </div>  <div id="news">
-    <h3>Yangiliklar</h3>
-    <div id="newsContent"></div>
-  </div>  <div id="player">
-    <iframe id="archivePlayer" allowfullscreen></iframe>
+  <div class="container">
+    <div id="auth">
+      <h3>Login yoki Ro'yxatdan o'tish</h3>
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Parol" />
+      <button onclick="login()">Kirish</button>
+      <button onclick="register()">Ro'yxatdan o'tish</button>
+    </div><div id="search" style="display:none">
+  <input type="text" id="searchBox" placeholder="Anime qidiring..." oninput="filterAnime()" />
+</div>
+
+<div id="animeList"></div>
+<div id="episodeList"></div>
+<div id="player" style="display:none">
+  <iframe id="archivePlayer" allowfullscreen></iframe>
+</div>
+
   </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBgDwfB9F4mHVAGN_9F-5ZJI56RikyDaeU",
@@ -72,44 +58,63 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    function setView(view) {
-      document.querySelectorAll('#home, #news, #player, #auth').forEach(d => d.classList.remove('visible'));
-      if (view === 'home') loadAnime();
-      if (view === 'news') loadNews();
-      document.getElementById(view).classList.add('visible');
-    }
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('search').style.display = 'block';
+        loadAnime();
+      }
+    });
 
     function login() {
       auth.signInWithEmailAndPassword(
-        document.getElementById('email').value,
-        document.getElementById('password').value
-      ).then(() => alert('Kirdingiz')).catch(e => alert(e.message));
+        email.value,
+        password.value
+      ).catch(e => alert(e.message));
     }
 
     function register() {
       auth.createUserWithEmailAndPassword(
-        document.getElementById('email').value,
-        document.getElementById('password').value
-      ).then(() => alert('Ro'yxatdan o'tdingiz')).catch(e => alert(e.message));
+        email.value,
+        password.value
+      ).catch(e => alert(e.message));
     }
+
+    let allAnime = [];
 
     function loadAnime() {
       db.ref('animeList').once('value', snapshot => {
         const container = document.getElementById('animeList');
+        allAnime = [];
         container.innerHTML = '';
         snapshot.forEach(child => {
           const anime = child.val();
-          const div = document.createElement('div');
-          div.className = 'anime';
-          div.innerHTML = `
-            <img src="${anime.image}" alt="${anime.title}" />
-            <h3>${anime.title}</h3>
-            <p>${anime.desc}</p>
-            <button onclick="loadEpisodes('${anime.id}')">Qismlar</button>
-          `;
-          container.appendChild(div);
+          allAnime.push(anime);
         });
+        renderAnime(allAnime);
       });
+    }
+
+    function renderAnime(list) {
+      const container = document.getElementById('animeList');
+      container.innerHTML = '';
+      list.forEach(anime => {
+        const div = document.createElement('div');
+        div.className = 'anime';
+        div.innerHTML = `
+          <img src="${anime.image}" alt="${anime.title}" />
+          <h3>${anime.title}</h3>
+          <p>${anime.desc}</p>
+          <button onclick="loadEpisodes('${anime.id}')">Qismlar</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function filterAnime() {
+      const val = document.getElementById('searchBox').value.toLowerCase();
+      const filtered = allAnime.filter(a => a.title.toLowerCase().includes(val));
+      renderAnime(filtered);
     }
 
     function loadEpisodes(id) {
@@ -131,23 +136,7 @@
 
     function playVideo(streamId) {
       document.getElementById('archivePlayer').src = `https://archive.org/embed/${streamId}`;
-      setView('player');
+      document.getElementById('player').style.display = 'block';
     }
-
-    function loadNews() {
-      const news = [
-        { title: "Naruto yangi qism", desc: "Uzumaki Naruto qaytdi", mal_id: 1 },
-        { title: "One Piece yangilik", desc: "Luffy yangi kuch oldi", mal_id: 2 }
-      ];
-      const container = document.getElementById('newsContent');
-      container.innerHTML = '';
-      news.forEach(n => {
-        const div = document.createElement('div');
-        div.innerHTML = `<h4>${n.title}</h4><p>${n.desc}</p><a href='https://myanimelist.net/anime/${n.mal_id}' target='_blank'>Batafsil</a><hr/>`;
-        container.appendChild(div);
-      });
-    }
-
-    window.onload = () => setView('home');
   </script></body>
-</html>
+                        </html>
