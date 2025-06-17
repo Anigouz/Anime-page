@@ -27,14 +27,18 @@
       background: rgba(0, 0, 0, 0.6);
       z-index: -1;
     }
-    .toolbar {
-      background: rgba(0, 0, 0, 0.6);
+    .toolbar, .search-bar {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       padding: 10px 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
-      z-index: 1;
     }
     .toolbar h1 {
       margin: 0;
@@ -49,17 +53,13 @@
     }
     .search-bar {
       display: none;
-      padding: 10px 20px;
-      background: rgba(0, 0, 0, 0.6);
-      position: relative;
-      z-index: 1;
     }
     .search-bar input {
       width: 100%;
       padding: 10px;
       border-radius: 6px;
       border: none;
-      background: #222;
+      background: rgba(34, 34, 34, 0.8);
       color: white;
     }
     .container {
@@ -212,4 +212,4 @@
       box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
   </script></body>
-                                 </html>
+      </html>
