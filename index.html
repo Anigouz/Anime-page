@@ -1,58 +1,108 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>AniGouz</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; background: #111; color: white; }
-    video.bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2; }
-    .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: -1; }
-    header { text-align: center; padding: 1em; background: #222; font-size: 24px; }
-    .container { padding: 20px; max-width: 900px; margin: auto; }
-    input, button { padding: 10px; margin: 5px 0; width: 100%; border: none; border-radius: 6px; }
-    input { background: #222; color: white; }
-    button { background: #00d1ff; color: black; font-weight: bold; cursor: pointer; }
-    .anime, .episode { background: #222; margin: 10px 0; padding: 10px; border-radius: 8px; }
-    .anime img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; }
-    #player iframe { width: 100%; height: 400px; border: none; border-radius: 10px; box-shadow: 0 0 20px cyan; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: sans-serif;
+    }
+    video.bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 6px;
+    }
+    button {
+      background: #00d1ff;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .anime, .episode {
+      background: #222;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+    .anime img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    iframe {
+      width: 100%;
+      height: 400px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 20px cyan;
+    }
+  </style>
 </head>
 <body>
-  <video class="bg" autoplay muted loop playsinline>
-    <source src="https://archive.org/download/VID_20250617_010217_464/VID_20250617_010217_464.mp4" type="video/mp4" />
+  <video class="bg" autoplay muted loop>
+    <source src="https://archive.org/download/VID_20250617_010217_464/VID_20250617_010217_464.mp4" type="video/mp4">
   </video>
   <div class="overlay"></div>
-  <header>AniGouz</header>
   <div class="container">
+    <h2>AniGouz</h2>
+
     <div id="auth">
-      <h3>Login yoki Ro'yxatdan o'tish</h3>
-      <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Parol" />
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Parol">
       <button onclick="login()">Kirish</button>
       <button onclick="register()">Ro'yxatdan o'tish</button>
-    </div><div id="search" style="display:none">
-  <input type="text" id="searchBox" placeholder="Anime qidiring..." oninput="filterAnime()" />
-</div>
+    </div>
 
-<div id="animeList"></div>
-<div id="episodeList"></div>
-<div id="player" style="display:none">
-  <iframe id="archivePlayer" allowfullscreen></iframe>
-</div>
+    <div id="searchBox" style="display:none;">
+      <input type="text" id="search" placeholder="Anime qidirish..." oninput="filterAnime()">
+    </div>
 
-  </div>  <script>
+    <div id="animeList"></div>
+    <div id="episodeList"></div>
+    <div id="player" style="display:none;">
+      <iframe id="archivePlayer" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyBgDwfB9F4mHVAGN_9F-5ZJI56RikyDaeU",
-      authDomain: "tv-app-e4ef4.firebaseapp.com",
-      databaseURL: "https://tv-app-e4ef4-default-rtdb.firebaseio.com",
-      projectId: "tv-app-e4ef4",
-      storageBucket: "tv-app-e4ef4.appspot.com",
-      messagingSenderId: "224075442016",
-      appId: "1:224075442016:web:718aafce5aa16163e06005"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:xxxx"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -61,7 +111,7 @@
     auth.onAuthStateChanged(user => {
       if (user) {
         document.getElementById('auth').style.display = 'none';
-        document.getElementById('search').style.display = 'block';
+        document.getElementById('searchBox').style.display = 'block';
         loadAnime();
       }
     });
@@ -70,50 +120,47 @@
       auth.signInWithEmailAndPassword(
         email.value,
         password.value
-      ).catch(e => alert(e.message));
+      ).catch(err => alert(err.message));
     }
 
     function register() {
       auth.createUserWithEmailAndPassword(
         email.value,
         password.value
-      ).catch(e => alert(e.message));
+      ).catch(err => alert(err.message));
     }
 
     let allAnime = [];
 
     function loadAnime() {
       db.ref('animeList').once('value', snapshot => {
-        const container = document.getElementById('animeList');
         allAnime = [];
-        container.innerHTML = '';
         snapshot.forEach(child => {
-          const anime = child.val();
-          allAnime.push(anime);
+          allAnime.push(child.val());
         });
         renderAnime(allAnime);
       });
     }
 
-    function renderAnime(list) {
+    function renderAnime(animes) {
       const container = document.getElementById('animeList');
       container.innerHTML = '';
-      list.forEach(anime => {
-        const div = document.createElement('div');
-        div.className = 'anime';
-        div.innerHTML = `
-          <img src="${anime.image}" alt="${anime.title}" />
+      animes.forEach(anime => {
+        const el = document.createElement('div');
+        el.className = 'anime';
+        el.innerHTML = `
+          <img src="${anime.image}">
           <h3>${anime.title}</h3>
           <p>${anime.desc}</p>
           <button onclick="loadEpisodes('${anime.id}')">Qismlar</button>
         `;
-        container.appendChild(div);
+        container.appendChild(el);
       });
     }
 
     function filterAnime() {
-      const val = document.getElementById('searchBox').value.toLowerCase();
-      const filtered = allAnime.filter(a => a.title.toLowerCase().includes(val));
+      const q = document.getElementById('search').value.toLowerCase();
+      const filtered = allAnime.filter(a => a.title.toLowerCase().includes(q));
       renderAnime(filtered);
     }
 
@@ -123,20 +170,21 @@
         container.innerHTML = '';
         snapshot.forEach(child => {
           const ep = child.val();
-          const div = document.createElement('div');
-          div.className = 'episode';
-          div.innerHTML = `
+          const el = document.createElement('div');
+          el.className = 'episode';
+          el.innerHTML = `
             <h4>${ep.title}</h4>
             <button onclick="playVideo('${ep.stream}')">Tomosha qilish</button>
           `;
-          container.appendChild(div);
+          container.appendChild(el);
         });
       });
     }
 
-    function playVideo(streamId) {
-      document.getElementById('archivePlayer').src = `https://archive.org/embed/${streamId}`;
+    function playVideo(stream) {
       document.getElementById('player').style.display = 'block';
+      document.getElementById('archivePlayer').src = `https://archive.org/embed/${stream}`;
     }
-  </script></body>
-                        </html>
+  </script>
+</body>
+</html>
