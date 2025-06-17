@@ -28,11 +28,13 @@
       z-index: -1;
     }
     .toolbar {
-      background: #222;
+      background: rgba(0, 0, 0, 0.6);
       padding: 10px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
+      z-index: 1;
     }
     .toolbar h1 {
       margin: 0;
@@ -48,7 +50,9 @@
     .search-bar {
       display: none;
       padding: 10px 20px;
-      background: #111;
+      background: rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 1;
     }
     .search-bar input {
       width: 100%;
@@ -100,7 +104,7 @@
 </head>
 <body>
   <video class="bg" autoplay muted loop>
-    <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
+    <source src="https://archive.org/download/VID_20250617_010217_464/VID_20250617_010217_464.mp4" type="video/mp4">
   </video>
   <div class="overlay"></div>  <div class="toolbar">
     <h1>AniGouz</h1>
@@ -121,13 +125,13 @@
 
   </div>  <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyBgDwfB9F4mHVAGN_9F-5ZJI56RikyDaeU",
-      authDomain: "tv-app-e4ef4.firebaseapp.com",
-      databaseURL: "https://tv-app-e4ef4-default-rtdb.firebaseio.com",
-      projectId: "tv-app-e4ef4",
-      storageBucket: "tv-app-e4ef4.appspot.com",
-      messagingSenderId: "224075442016",
-      appId: "1:224075442016:web:718aafce5aa16163e06005"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:xxxx"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -208,4 +212,4 @@
       box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
   </script></body>
-  </html>
+                                 </html>
