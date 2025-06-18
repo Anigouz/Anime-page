@@ -250,15 +250,12 @@
 
     window.onpopstate = function (event) {
       document.getElementById('archivePlayer').src = "";
-
       const animeList = document.getElementById('animeList');
       const episodeList = document.getElementById('episodeList');
       const player = document.getElementById('player');
 
       if (!event.state || event.state.view === 'home') {
-        animeList.style.display = 'grid';
-        episodeList.style.display = 'none';
-        player.style.display = 'none';
+        renderAnime(allAnime); // Home'ga qaytganda qayta yuklaydi
       } else if (event.state.view === 'episodes') {
         animeList.style.display = 'none';
         episodeList.style.display = 'block';
