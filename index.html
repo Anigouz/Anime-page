@@ -217,7 +217,7 @@
     }
 
     function loadEpisodes(id) {
-      history.pushState({ view: 'episodes' }, '', '#episodes');
+      history.pushState({ view: 'episodes', animeId: id }, '', '#episodes');
       document.getElementById('animeList').style.display = 'none';
       document.getElementById('player').style.display = 'none';
       document.getElementById('episodeList').style.display = 'block';
@@ -262,4 +262,4 @@
       }
     };
   </script></body>
-</html>
+  </html>
