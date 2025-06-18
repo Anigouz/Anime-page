@@ -1,4 +1,5 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <head>
   <meta charset="UTF-8">
   <title>AniGouz</title>
@@ -15,15 +16,19 @@
     }
     video.bg {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
       z-index: -2;
     }
     .overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       background: rgba(0, 0, 0, 0.25);
       z-index: -1;
     }
@@ -51,8 +56,6 @@
     }
     .search-bar {
       display: none;
-      margin-top: 5px;
-      transition: all 0.3s ease-in-out;
     }
     .search-bar input {
       width: 100%;
@@ -92,8 +95,8 @@
     }
     .anime img {
       width: 100%;
-      height: 200px;
-      object-fit: cover;
+      height: auto;
+      object-fit: contain;
       border-radius: 6px;
     }
     .episode {
@@ -128,32 +131,50 @@
       cursor: pointer;
       z-index: 2;
     }
+    #backButton {
+      margin-bottom: 10px;
+      background: #444;
+      color: white;
+      border-radius: 6px;
+      padding: 8px;
+      border: none;
+      cursor: pointer;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <video class="bg" autoplay muted loop>
     <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
   </video>
-  <div class="overlay"></div>  <div class="toolbar">
+  <div class="overlay"></div>
+
+  <div class="toolbar">
     <h1>AniGouz</h1>
     <button onclick="toggleSearch()">🔍</button>
   </div>
-  <div class="search-bar" id="searchBox" style="display: none;">
-    <input type="text" id="search" placeholder="Anime qidiring..." oninput="filterAnime()">
-  </div>  <div class="container">
+
+  <div class="search-bar" id="searchBox">
+    <input type="text" id="search" placeholder="Anime qidiring..." onkeydown="checkSearchKey(event)">
+  </div>
+
+  <div class="container">
     <div id="auth">
       <input type="email" id="email" placeholder="Email">
       <input type="password" id="password" placeholder="Parol">
       <button onclick="login()">Kirish</button>
       <button onclick="register()">Ro'yxatdan o'tish</button>
     </div>
+    <button id="backButton" onclick="goBack()">← Orqaga</button>
     <div id="animeList"></div>
     <div id="episodeList" style="display:none;"></div>
     <div id="player">
-      <iframe id="archivePlayer" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="fullscreen"></iframe>
+      <iframe id="archivePlayer" allowfullscreen></iframe>
       <button onclick="makeFullScreen()">⛶</button>
     </div>
-  </div>  <script>
+  </div>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBgDwfB9F4mHVAGN_9F-5ZJI56RikyDaeU",
       authDomain: "tv-app-e4ef4.firebaseapp.com",
@@ -210,6 +231,7 @@
       document.getElementById('animeList').style.display = 'grid';
       document.getElementById('episodeList').style.display = 'none';
       document.getElementById('player').style.display = 'none';
+      document.getElementById('backButton').style.display = 'none';
     }
 
     function toggleSearch() {
@@ -225,13 +247,17 @@
       }
     }
 
+    function checkSearchKey(e) {
+      if (e.key === 'Enter') {
+        filterAnime();
+        document.getElementById('searchBox').style.display = 'none';
+      }
+    }
+
     function filterAnime() {
       const q = document.getElementById('search').value.toLowerCase();
       const filtered = allAnime.filter(a => a.title.toLowerCase().includes(q));
       renderAnime(filtered);
-      if (q.length > 0) {
-        document.getElementById('searchBox').style.display = 'none';
-      }
     }
 
     function loadEpisodes(id) {
@@ -240,6 +266,7 @@
       document.getElementById('player').style.display = 'none';
       document.getElementById('episodeList').style.display = 'block';
       document.getElementById('episodeList').innerHTML = '';
+      document.getElementById('backButton').style.display = 'block';
 
       db.ref('episodes/' + id).once('value', snapshot => {
         snapshot.forEach(child => {
@@ -265,23 +292,22 @@
 
     function makeFullScreen() {
       const iframe = document.getElementById('archivePlayer');
-      if (iframe.requestFullscreen) {
-        iframe.requestFullscreen();
-      } else if (iframe.webkitRequestFullscreen) {
-        iframe.webkitRequestFullscreen();
-      } else if (iframe.mozRequestFullScreen) {
-        iframe.mozRequestFullScreen();
-      } else if (iframe.msRequestFullscreen) {
-        iframe.msRequestFullscreen();
-      } else {
-        alert("Brauzering fullscreen rejimni qo‘llamaydi.");
-      }
+      if (iframe.requestFullscreen) iframe.requestFullscreen();
+      else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+      else if (iframe.mozRequestFullScreen) iframe.mozRequestFullScreen();
+      else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+      else alert('Fullscreen rejimni brauzer qo‘llamaydi');
+    }
+
+    function goBack() {
+      history.back();
     }
 
     window.onpopstate = function (event) {
       const animeList = document.getElementById('animeList');
       const episodeList = document.getElementById('episodeList');
       const player = document.getElementById('player');
+      const backBtn = document.getElementById('backButton');
       const iframe = document.getElementById('archivePlayer');
       iframe.src = "";
 
@@ -290,11 +316,13 @@
         animeList.style.display = 'grid';
         episodeList.style.display = 'none';
         player.style.display = 'none';
+        backBtn.style.display = 'none';
       } else if (event.state.view === 'episodes') {
         const id = event.state.animeId;
         animeList.style.display = 'none';
         player.style.display = 'none';
         episodeList.style.display = 'block';
+        backBtn.style.display = 'block';
         episodeList.innerHTML = '';
         db.ref('episodes/' + id).once('value', snapshot => {
           snapshot.forEach(child => {
@@ -312,7 +340,9 @@
         player.style.display = 'none';
         episodeList.style.display = 'block';
         animeList.style.display = 'none';
+        backBtn.style.display = 'block';
       }
     };
-  </script></body>
+  </script>
+</body>
   </html>
