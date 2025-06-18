@@ -1,4 +1,5 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html><html>
+<head>
   <meta charset="UTF-8">
   <title>AniGouz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,7 +64,7 @@
     }
     .container {
       padding: 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
     }
     input, button {
@@ -81,13 +82,12 @@
     }
     #animeList {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
-    .anime, .episode {
+    .anime {
       background: #BF000000;
       padding: 10px;
-      margin-top: 15px;
       border-radius: 8px;
     }
     .anime img {
@@ -95,6 +95,12 @@
       height: 200px;
       object-fit: cover;
       border-radius: 6px;
+    }
+    .episode {
+      background: #222;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
     }
     iframe {
       width: 100%;
@@ -110,15 +116,13 @@
   <video class="bg" autoplay muted loop>
     <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
   </video>
-  <div class="overlay"></div>
-  <div class="toolbar">
+  <div class="overlay"></div>  <div class="toolbar">
     <h1>AniGouz</h1>
     <button onclick="toggleSearch()">🔍</button>
   </div>
   <div class="search-bar" id="searchBox">
     <input type="text" id="search" placeholder="Anime qidiring..." oninput="filterAnime()">
-  </div>
-  <div class="container">
+  </div>  <div class="container">
     <div id="auth">
       <input type="email" id="email" placeholder="Email">
       <input type="password" id="password" placeholder="Parol">
@@ -126,12 +130,11 @@
       <button onclick="register()">Ro'yxatdan o'tish</button>
     </div>
     <div id="animeList"></div>
-    <div id="episodeList"></div>
+    <div id="episodeList" style="display:none;"></div>
     <div id="player" style="display:none;">
       <iframe id="archivePlayer" allowfullscreen></iframe>
     </div>
-  </div>
-  <script>
+  </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBgDwfB9F4mHVAGN_9F-5ZJI56RikyDaeU",
       authDomain: "tv-app-e4ef4.firebaseapp.com",
@@ -143,94 +146,101 @@
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.database();auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById('auth').style.display = 'none';
-    document.getElementById('searchBox').style.display = 'block';
-    loadAnime();
-  }
-});
+    const db = firebase.database();
 
-function login() {
-  auth.signInWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
-}
-
-function register() {
-  auth.createUserWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
-}
-
-let allAnime = [];
-
-function loadAnime() {
-  db.ref('animeList').once('value', snapshot => {
-    allAnime = [];
-    snapshot.forEach(child => allAnime.push(child.val()));
-    renderAnime(allAnime);
-  });
-}
-
-function renderAnime(animes) {
-  const container = document.getElementById('animeList');
-  container.innerHTML = '';
-  animes.forEach(anime => {
-    const el = document.createElement('div');
-    el.className = 'anime';
-    el.innerHTML = `
-      <img src="${anime.image}">
-      <h3>${anime.title}</h3>
-      <p>${anime.desc}</p>
-      <button onclick="loadEpisodes('${anime.id}')">Qismlar</button>
-    `;
-    container.appendChild(el);
-  });
-}
-
-function filterAnime() {
-  const q = document.getElementById('search').value.toLowerCase();
-  const filtered = allAnime.filter(a => a.title.toLowerCase().includes(q));
-  renderAnime(filtered);
-}
-
-function loadEpisodes(id) {
-  history.pushState({ view: 'episodes' }, '', '#episodes');
-  document.getElementById('episodeList').innerHTML = '';
-  document.getElementById('player').style.display = 'none';
-  db.ref('episodes/' + id).once('value', snapshot => {
-    snapshot.forEach(child => {
-      const ep = child.val();
-      const el = document.createElement('div');
-      el.className = 'episode';
-      el.innerHTML = `
-        <h4>${ep.title}</h4>
-        <button onclick="playVideo('${ep.stream}')">Tomosha qilish</button>
-      `;
-      document.getElementById('episodeList').appendChild(el);
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('searchBox').style.display = 'block';
+        loadAnime();
+        history.replaceState({view: 'home'}, '', '#home');
+      }
     });
-  });
-}
 
-function playVideo(stream) {
-  history.pushState({ view: 'player' }, '', '#player');
-  document.getElementById('player').style.display = 'block';
-  document.getElementById('archivePlayer').src = `https://archive.org/embed/${stream}`;
-}
+    function login() {
+      auth.signInWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
+    }
+    function register() {
+      auth.createUserWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
+    }
 
-function toggleSearch() {
-  const box = document.getElementById('searchBox');
-  box.style.display = box.style.display === 'block' ? 'none' : 'block';
-}
+    let allAnime = [];
 
-window.onpopstate = function (event) {
-  if (!event.state || event.state.view === 'home') {
-    document.getElementById('player').style.display = 'none';
-    document.getElementById('episodeList').innerHTML = '';
-  } else if (event.state.view === 'episodes') {
-    document.getElementById('player').style.display = 'none';
-  } else if (event.state.view === 'player') {
-    document.getElementById('player').style.display = 'none';
-  }
-};
+    function loadAnime() {
+      db.ref('animeList').once('value', snapshot => {
+        allAnime = [];
+        snapshot.forEach(child => allAnime.push(child.val()));
+        renderAnime(allAnime);
+      });
+    }
 
-  </script>
-</body>
-  </html>
+    function renderAnime(animes) {
+      const container = document.getElementById('animeList');
+      container.innerHTML = '';
+      animes.forEach(anime => {
+        const el = document.createElement('div');
+        el.className = 'anime';
+        el.innerHTML = `
+          <img src="${anime.image}">
+          <h3>${anime.title}</h3>
+          <p>${anime.desc}</p>
+          <button onclick="loadEpisodes('${anime.id}')">Qismlar</button>
+        `;
+        container.appendChild(el);
+      });
+      document.getElementById('animeList').style.display = 'grid';
+      document.getElementById('episodeList').style.display = 'none';
+      document.getElementById('player').style.display = 'none';
+    }
+
+    function filterAnime() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const filtered = allAnime.filter(a => a.title.toLowerCase().includes(q));
+      renderAnime(filtered);
+    }
+
+    function loadEpisodes(id) {
+      history.pushState({ view: 'episodes' }, '', '#episodes');
+      document.getElementById('animeList').style.display = 'none';
+      document.getElementById('episodeList').style.display = 'block';
+      document.getElementById('episodeList').innerHTML = '';
+      document.getElementById('player').style.display = 'none';
+      db.ref('episodes/' + id).once('value', snapshot => {
+        snapshot.forEach(child => {
+          const ep = child.val();
+          const el = document.createElement('div');
+          el.className = 'episode';
+          el.innerHTML = `
+            <h4>${ep.title}</h4>
+            <button onclick="playVideo('${ep.stream}')">Tomosha qilish</button>
+          `;
+          document.getElementById('episodeList').appendChild(el);
+        });
+      });
+    }
+
+    function playVideo(stream) {
+      history.pushState({ view: 'player' }, '', '#player');
+      document.getElementById('player').style.display = 'block';
+      document.getElementById('episodeList').style.display = 'none';
+      document.getElementById('archivePlayer').src = `https://archive.org/embed/${stream}`;
+    }
+
+    function toggleSearch() {
+      const box = document.getElementById('searchBox');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.onpopstate = function (event) {
+      if (!event.state || event.state.view === 'home') {
+        renderAnime(allAnime);
+      } else if (event.state.view === 'episodes') {
+        document.getElementById('player').style.display = 'none';
+        document.getElementById('episodeList').style.display = 'block';
+      } else if (event.state.view === 'player') {
+        document.getElementById('player').style.display = 'none';
+        document.getElementById('episodeList').style.display = 'block';
+      }
+    };
+  </script></body>
+    </html>
