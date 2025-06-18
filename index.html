@@ -93,10 +93,9 @@
     .anime img {
       width: 100%;
       height: 200px;
-      object-fit: cover;
+      object-fit: fill;
       border-radius: 6px;
       display: block;
-      aspect-ratio: 3/4;
     }
     .episode {
       background: #222;
@@ -116,8 +115,14 @@
       padding: 0;
     }
     #player iframe {
-      width: 100%;
-      height: 100%;
+      width: 100vh;
+      height: 100vw;
+      transform: rotate(90deg);
+      transform-origin: center center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
       border: none;
       border-radius: 0;
       box-shadow: none;
@@ -257,4 +262,4 @@
       }
     };
   </script></body>
-             </html>
+</html>
