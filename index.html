@@ -96,6 +96,7 @@
       object-fit: cover;
       border-radius: 6px;
       display: block;
+      aspect-ratio: 3/4;
     }
     .episode {
       background: #222;
@@ -103,13 +104,23 @@
       margin-top: 15px;
       border-radius: 8px;
     }
-    iframe {
+    #player {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 999;
+      display: none;
+      padding: 0;
+    }
+    #player iframe {
       width: 100%;
-      height: 400px;
-      margin-top: 20px;
+      height: 100%;
       border: none;
-      border-radius: 10px;
-      box-shadow: 0 0 20px cyan;
+      border-radius: 0;
+      box-shadow: none;
     }
   </style>
 </head>
@@ -132,7 +143,7 @@
     </div>
     <div id="animeList"></div>
     <div id="episodeList" style="display:none;"></div>
-    <div id="player" style="display:none;">
+    <div id="player">
       <iframe id="archivePlayer" allowfullscreen allow="fullscreen; autoplay; encrypted-media" webkitallowfullscreen mozallowfullscreen></iframe>
     </div>
   </div>  <script>
@@ -237,12 +248,13 @@
       if (!event.state || event.state.view === 'home') {
         renderAnime(allAnime);
       } else if (event.state.view === 'episodes') {
-        document.getElementById('player').style.display = 'none';
+        document.getElementById('animeList').style.display = 'none';
         document.getElementById('episodeList').style.display = 'block';
+        document.getElementById('player').style.display = 'none';
       } else if (event.state.view === 'player') {
         document.getElementById('player').style.display = 'none';
         document.getElementById('episodeList').style.display = 'block';
       }
     };
   </script></body>
-</html>
+             </html>
