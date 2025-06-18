@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>AniGouz</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- WebView va iframe uchun ruxsat -->
+  <meta http-equiv="X-Frame-Options" content="ALLOWALL">
+  <meta http-equiv="Content-Security-Policy" content="frame-ancestors *;">
+
+  <title>AniGouz</title>
+
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -14,39 +21,41 @@
       color: white;
       font-family: sans-serif;
     }
+
     video.bg {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       object-fit: cover;
       z-index: -2;
     }
+
     .overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.25);
       z-index: -1;
     }
+
     .toolbar, .search-bar {
       background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(6px);
       padding: 10px 20px;
       z-index: 1;
     }
+
     .toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+
     .toolbar h1 {
       margin: 0;
       font-size: 20px;
     }
+
     .toolbar button {
       background: none;
       border: none;
@@ -54,9 +63,11 @@
       color: white;
       cursor: pointer;
     }
+
     .search-bar {
       display: none;
     }
+
     .search-bar input {
       width: 100%;
       padding: 10px;
@@ -65,11 +76,13 @@
       background: rgba(34, 34, 34, 0.8);
       color: white;
     }
+
     .container {
       padding: 20px;
       max-width: 900px;
       margin: auto;
     }
+
     input, button {
       width: 100%;
       padding: 10px;
@@ -77,34 +90,40 @@
       border: none;
       border-radius: 6px;
     }
+
     button {
       background: #00d1ff;
       color: black;
       font-weight: bold;
       cursor: pointer;
     }
+
     #animeList {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
+
     .anime {
       background: #BF000000;
       padding: 10px;
       border-radius: 8px;
     }
+
     .anime img {
       width: 100%;
       height: auto;
       object-fit: contain;
       border-radius: 6px;
     }
+
     .episode {
       background: #222;
       padding: 10px;
       margin-top: 15px;
       border-radius: 8px;
     }
+
     #player {
       position: relative;
       width: 100%;
@@ -114,11 +133,13 @@
       border-radius: 10px;
       overflow: hidden;
     }
+
     #player iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
+
     #player button {
       position: absolute;
       bottom: 10px;
@@ -131,6 +152,7 @@
       cursor: pointer;
       z-index: 2;
     }
+
     #backButton {
       margin-bottom: 10px;
       background: #444;
@@ -200,6 +222,7 @@
     function login() {
       auth.signInWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
     }
+
     function register() {
       auth.createUserWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
     }
