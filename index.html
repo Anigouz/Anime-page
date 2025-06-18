@@ -250,15 +250,23 @@
 
     window.onpopstate = function (event) {
       document.getElementById('archivePlayer').src = "";
+
+      const animeList = document.getElementById('animeList');
+      const episodeList = document.getElementById('episodeList');
+      const player = document.getElementById('player');
+
       if (!event.state || event.state.view === 'home') {
-        renderAnime(allAnime);
+        animeList.style.display = 'grid';
+        episodeList.style.display = 'none';
+        player.style.display = 'none';
       } else if (event.state.view === 'episodes') {
-        document.getElementById('animeList').style.display = 'none';
-        document.getElementById('episodeList').style.display = 'block';
-        document.getElementById('player').style.display = 'none';
+        animeList.style.display = 'none';
+        episodeList.style.display = 'block';
+        player.style.display = 'none';
       } else if (event.state.view === 'player') {
-        document.getElementById('player').style.display = 'none';
-        document.getElementById('episodeList').style.display = 'block';
+        animeList.style.display = 'none';
+        episodeList.style.display = 'block';
+        player.style.display = 'none';
       }
     };
   </script></body>
