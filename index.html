@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
   <meta charset="UTF-8">
   <title>AniGouz</title>
@@ -104,20 +103,15 @@
     #player {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      width: 100vw;
+      height: 100vh;
       background: #000;
       z-index: 999;
       display: none;
     }
     #player iframe {
-      width: 100vh;
-      height: 100vw;
-      transform: rotate(90deg);
-      transform-origin: center center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      translate: -50% -50%;
+      width: 100vw;
+      height: 100vh;
       border: none;
     }
   </style>
@@ -126,17 +120,13 @@
   <video class="bg" autoplay muted loop>
     <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
   </video>
-  <div class="overlay"></div>
-
-  <div class="toolbar">
+  <div class="overlay"></div>  <div class="toolbar">
     <h1>AniGouz</h1>
     <button onclick="toggleSearch()">🔍</button>
   </div>
   <div class="search-bar" id="searchBox">
     <input type="text" id="search" placeholder="Anime qidiring..." oninput="filterAnime()">
-  </div>
-
-  <div class="container">
+  </div>  <div class="container">
     <div id="auth">
       <input type="email" id="email" placeholder="Email">
       <input type="password" id="password" placeholder="Parol">
@@ -148,9 +138,7 @@
     <div id="player">
       <iframe id="archivePlayer" allowfullscreen></iframe>
     </div>
-  </div>
-
-  <script>
+  </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBgDwfB9F4mHVAGN_9F-5ZJI56RikyDaeU",
       authDomain: "tv-app-e4ef4.firebaseapp.com",
@@ -176,7 +164,6 @@
     function login() {
       auth.signInWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
     }
-
     function register() {
       auth.createUserWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
     }
@@ -222,6 +209,7 @@
       document.getElementById('player').style.display = 'none';
       document.getElementById('episodeList').style.display = 'block';
       document.getElementById('episodeList').innerHTML = '';
+
       db.ref('episodes/' + id).once('value', snapshot => {
         snapshot.forEach(child => {
           const ep = child.val();
@@ -263,8 +251,8 @@
       } else if (event.state.view === 'episodes') {
         const id = event.state.animeId;
         animeList.style.display = 'none';
-        episodeList.style.display = 'block';
         player.style.display = 'none';
+        episodeList.style.display = 'block';
         episodeList.innerHTML = '';
         db.ref('episodes/' + id).once('value', snapshot => {
           snapshot.forEach(child => {
@@ -284,6 +272,5 @@
         animeList.style.display = 'none';
       }
     };
-  </script>
-</body>
+  </script></body>
   </html>
