@@ -51,6 +51,8 @@
     }
     .search-bar {
       display: none;
+      margin-top: 5px;
+      transition: all 0.3s ease-in-out;
     }
     .search-bar input {
       width: 100%;
@@ -136,7 +138,7 @@
     <h1>AniGouz</h1>
     <button onclick="toggleSearch()">🔍</button>
   </div>
-  <div class="search-bar" id="searchBox">
+  <div class="search-bar" id="searchBox" style="display: none;">
     <input type="text" id="search" placeholder="Anime qidiring..." oninput="filterAnime()">
   </div>  <div class="container">
     <div id="auth">
@@ -168,7 +170,7 @@
     auth.onAuthStateChanged(user => {
       if (user) {
         document.getElementById('auth').style.display = 'none';
-        document.getElementById('searchBox').style.display = 'block';
+        document.getElementById('searchBox').style.display = 'none';
         loadAnime();
         history.replaceState({view: 'home'}, '', '#home');
       }
@@ -210,10 +212,26 @@
       document.getElementById('player').style.display = 'none';
     }
 
+    function toggleSearch() {
+      const box = document.getElementById('searchBox');
+      const input = document.getElementById('search');
+      if (box.style.display === 'block') {
+        box.style.display = 'none';
+        input.value = '';
+        renderAnime(allAnime);
+      } else {
+        box.style.display = 'block';
+        input.focus();
+      }
+    }
+
     function filterAnime() {
       const q = document.getElementById('search').value.toLowerCase();
       const filtered = allAnime.filter(a => a.title.toLowerCase().includes(q));
       renderAnime(filtered);
+      if (q.length > 0) {
+        document.getElementById('searchBox').style.display = 'none';
+      }
     }
 
     function loadEpisodes(id) {
@@ -243,11 +261,6 @@
       document.getElementById('animeList').style.display = 'none';
       document.getElementById('player').style.display = 'block';
       document.getElementById('archivePlayer').src = `https://archive.org/embed/${stream}`;
-    }
-
-    function toggleSearch() {
-      const box = document.getElementById('searchBox');
-      box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
 
     function makeFullScreen() {
