@@ -95,6 +95,7 @@
       height: 200px;
       object-fit: cover;
       border-radius: 6px;
+      display: block;
     }
     .episode {
       background: #222;
@@ -132,7 +133,7 @@
     <div id="animeList"></div>
     <div id="episodeList" style="display:none;"></div>
     <div id="player" style="display:none;">
-      <iframe id="archivePlayer" allowfullscreen></iframe>
+      <iframe id="archivePlayer" allowfullscreen allow="fullscreen; autoplay; encrypted-media" webkitallowfullscreen mozallowfullscreen></iframe>
     </div>
   </div>  <script>
     const firebaseConfig = {
@@ -202,9 +203,9 @@
     function loadEpisodes(id) {
       history.pushState({ view: 'episodes' }, '', '#episodes');
       document.getElementById('animeList').style.display = 'none';
+      document.getElementById('player').style.display = 'none';
       document.getElementById('episodeList').style.display = 'block';
       document.getElementById('episodeList').innerHTML = '';
-      document.getElementById('player').style.display = 'none';
       db.ref('episodes/' + id).once('value', snapshot => {
         snapshot.forEach(child => {
           const ep = child.val();
@@ -221,8 +222,8 @@
 
     function playVideo(stream) {
       history.pushState({ view: 'player' }, '', '#player');
-      document.getElementById('player').style.display = 'block';
       document.getElementById('episodeList').style.display = 'none';
+      document.getElementById('player').style.display = 'block';
       document.getElementById('archivePlayer').src = `https://archive.org/embed/${stream}`;
     }
 
@@ -232,6 +233,7 @@
     }
 
     window.onpopstate = function (event) {
+      document.getElementById('archivePlayer').src = "";
       if (!event.state || event.state.view === 'home') {
         renderAnime(allAnime);
       } else if (event.state.view === 'episodes') {
@@ -243,4 +245,4 @@
       }
     };
   </script></body>
-    </html>
+</html>
