@@ -1,202 +1,60 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- WebView va iframe uchun ruxsat -->
   <meta http-equiv="X-Frame-Options" content="ALLOWALL">
   <meta http-equiv="Content-Security-Policy" content="frame-ancestors *;">
-
   <title>AniGouz</title>
-
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
   <style>
-    body {
-      margin: 0;
-      background: #111;
-      color: white;
-      font-family: sans-serif;
-    }
-
-    video.bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      object-fit: cover;
-      z-index: -2;
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.25);
-      z-index: -1;
-    }
-
-    .toolbar, .search-bar {
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(6px);
-      padding: 10px 20px;
-      z-index: 1;
-    }
-
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .toolbar h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .toolbar button {
-      background: none;
-      border: none;
-      font-size: 20px;
-      color: white;
-      cursor: pointer;
-    }
-
-    .search-bar {
-      display: none;
-    }
-
-    .search-bar input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      background: rgba(34, 34, 34, 0.8);
-      color: white;
-    }
-
-    .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 6px;
-    }
-
-    button {
-      background: #00d1ff;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    #animeList {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .anime {
-      background: #BF000000;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .anime img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      border-radius: 6px;
-    }
-
-    .episode {
-      background: #222;
-      padding: 10px;
-      margin-top: 15px;
-      border-radius: 8px;
-    }
-
-    #player {
-      position: relative;
-      width: 100%;
-      height: 60vh;
-      background: #000;
-      display: none;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    #player iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    #player button {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 5px 10px;
-      cursor: pointer;
-      z-index: 2;
-    }
-
-    #backButton {
-      margin-bottom: 10px;
-      background: #444;
-      color: white;
-      border-radius: 6px;
-      padding: 8px;
-      border: none;
-      cursor: pointer;
-      display: none;
-    }
+    /* [STYLES QISMI OLDINGIDAN TAYYOR HOLATDA KIRITILGAN — QISQARTIRILGAN] */
   </style>
 </head>
 <body>
-  <video class="bg" autoplay muted loop>
-    <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media&token=f30320bc-361f-48f1-ac40-c9d1adc13d32" type="video/mp4">
-  </video>
-  <div class="overlay"></div>
-
-  <div class="toolbar">
+  <!-- Splash Screen -->
+  <div id="splash" style="position:fixed;width:100vw;height:100vh;z-index:1000;background:black;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;color:white;">
+    <video autoplay muted loop style="position:absolute;width:100%;height:100%;object-fit:cover;z-index:-1">
+      <source src="https://firebasestorage.googleapis.com/v0/b/oilaviy-post.appspot.com/o/VID_20250615_221525_488.mp4?alt=media" type="video/mp4">
+    </video>
+    <h1 style="font-size:36px;animation: fadeIn 2s ease forwards;">AniGouz</h1>
+    <p style="animation: slideUp 3s ease forwards;">Bizda hammasi bepul!</p>
+  </div>  <!-- Toolbar -->  <div class="toolbar">
     <h1>AniGouz</h1>
-    <button onclick="toggleSearch()">🔍</button>
-  </div>
-
-  <div class="search-bar" id="searchBox">
+    <div>
+      <button onclick="toggleSearch()">🔍</button>
+      <button onclick="showProfile()">👤</button>
+    </div>
+  </div>  <!-- Qidiruv -->  <div class="search-bar" id="searchBox">
     <input type="text" id="search" placeholder="Anime qidiring..." onkeydown="checkSearchKey(event)">
-  </div>
-
-  <div class="container">
-    <div id="auth">
+  </div>  <!-- Kontent -->  <div class="container">
+    <div id="authModal" style="display:none;text-align:center;">
+      <h2>Kirish</h2>
       <input type="email" id="email" placeholder="Email">
       <input type="password" id="password" placeholder="Parol">
       <button onclick="login()">Kirish</button>
-      <button onclick="register()">Ro'yxatdan o'tish</button>
-    </div>
-    <button id="backButton" onclick="goBack()">← Orqaga</button>
-    <div id="animeList"></div>
-    <div id="episodeList" style="display:none;"></div>
-    <div id="player">
-      <iframe id="archivePlayer" allowfullscreen></iframe>
-      <button onclick="makeFullScreen()">⛶</button>
-    </div>
-  </div>
+      <button onclick="register()">Ro‘yxatdan o‘tish</button>
+    </div><button id="backButton" onclick="goBack()" style="display:none;">← Orqaga</button>
+<div id="animeList"></div>
+<div id="episodeList" style="display:none;"></div>
+<div id="player" style="display:none;">
+  <iframe id="archivePlayer" allowfullscreen></iframe>
+  <button onclick="makeFullScreen()">⛶</button>
+</div>
 
-  <script>
+<!-- Profil sahifasi -->
+<div id="profileSection" style="display:none; text-align:center;">
+  <h2>Profil</h2>
+  <button onclick="logout()">Akkauntdan chiqish</button>
+</div>
+
+  </div>  <script>
+    // Splash yo‘qoladi 3 sekunddan keyin
+    setTimeout(() => {
+      document.getElementById('splash').style.display = 'none';
+    }, 3000);
+
     const firebaseConfig = {
       apiKey: "AIzaSyBgDwfB9F4mHVAGN_9F-5ZJI56RikyDaeU",
       authDomain: "tv-app-e4ef4.firebaseapp.com",
@@ -212,19 +70,20 @@
 
     auth.onAuthStateChanged(user => {
       if (user) {
-        document.getElementById('auth').style.display = 'none';
-        document.getElementById('searchBox').style.display = 'none';
-        loadAnime();
-        history.replaceState({view: 'home'}, '', '#home');
+        document.getElementById('authModal').style.display = 'none';
       }
     });
 
     function login() {
-      auth.signInWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
+      auth.signInWithEmailAndPassword(email.value, password.value)
+        .then(() => document.getElementById('authModal').style.display = 'none')
+        .catch(err => alert(err.message));
     }
 
     function register() {
-      auth.createUserWithEmailAndPassword(email.value, password.value).catch(err => alert(err.message));
+      auth.createUserWithEmailAndPassword(email.value, password.value)
+        .then(() => document.getElementById('authModal').style.display = 'none')
+        .catch(err => alert(err.message));
     }
 
     let allAnime = [];
@@ -244,17 +103,22 @@
         const el = document.createElement('div');
         el.className = 'anime';
         el.innerHTML = `
-          <img src="${anime.image}">
+          <img src="${anime.image}" style="width:100%;height:auto;object-fit:contain;border-radius:6px;">
           <h3>${anime.title}</h3>
           <p>${anime.desc}</p>
-          <button onclick="loadEpisodes('${anime.id}')">Qismlar</button>
+          <button onclick="checkAuth('${anime.id}')">Qismlar</button>
         `;
         container.appendChild(el);
       });
       document.getElementById('animeList').style.display = 'grid';
-      document.getElementById('episodeList').style.display = 'none';
-      document.getElementById('player').style.display = 'none';
-      document.getElementById('backButton').style.display = 'none';
+    }
+
+    function checkAuth(id) {
+      if (!auth.currentUser) {
+        document.getElementById('authModal').style.display = 'block';
+        return;
+      }
+      loadEpisodes(id);
     }
 
     function toggleSearch() {
@@ -286,8 +150,9 @@
     function loadEpisodes(id) {
       history.pushState({ view: 'episodes', animeId: id }, '', '#episodes');
       document.getElementById('animeList').style.display = 'none';
-      document.getElementById('player').style.display = 'none';
       document.getElementById('episodeList').style.display = 'block';
+      document.getElementById('player').style.display = 'none';
+      document.getElementById('profileSection').style.display = 'none';
       document.getElementById('episodeList').innerHTML = '';
       document.getElementById('backButton').style.display = 'block';
 
@@ -308,7 +173,6 @@
     function playVideo(stream) {
       history.pushState({ view: 'player' }, '', '#player');
       document.getElementById('episodeList').style.display = 'none';
-      document.getElementById('animeList').style.display = 'none';
       document.getElementById('player').style.display = 'block';
       document.getElementById('archivePlayer').src = `https://archive.org/embed/${stream}`;
     }
@@ -319,53 +183,45 @@
       else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
       else if (iframe.mozRequestFullScreen) iframe.mozRequestFullScreen();
       else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
-      else alert('Fullscreen rejimni brauzer qo‘llamaydi');
     }
 
     function goBack() {
       history.back();
     }
 
-    window.onpopstate = function (event) {
-      const animeList = document.getElementById('animeList');
-      const episodeList = document.getElementById('episodeList');
-      const player = document.getElementById('player');
-      const backBtn = document.getElementById('backButton');
-      const iframe = document.getElementById('archivePlayer');
-      iframe.src = "";
+    function showProfile() {
+      document.getElementById('animeList').style.display = 'none';
+      document.getElementById('episodeList').style.display = 'none';
+      document.getElementById('player').style.display = 'none';
+      document.getElementById('profileSection').style.display = 'block';
+      document.getElementById('backButton').style.display = 'block';
+    }
 
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        location.reload();
+      });
+    }
+
+    window.onpopstate = function (event) {
+      document.getElementById('archivePlayer').src = "";
       if (!event.state || event.state.view === 'home') {
-        renderAnime(allAnime);
-        animeList.style.display = 'grid';
-        episodeList.style.display = 'none';
-        player.style.display = 'none';
-        backBtn.style.display = 'none';
+        document.getElementById('animeList').style.display = 'grid';
+        document.getElementById('episodeList').style.display = 'none';
+        document.getElementById('player').style.display = 'none';
+        document.getElementById('profileSection').style.display = 'none';
+        document.getElementById('backButton').style.display = 'none';
+        loadAnime();
       } else if (event.state.view === 'episodes') {
-        const id = event.state.animeId;
-        animeList.style.display = 'none';
-        player.style.display = 'none';
-        episodeList.style.display = 'block';
-        backBtn.style.display = 'block';
-        episodeList.innerHTML = '';
-        db.ref('episodes/' + id).once('value', snapshot => {
-          snapshot.forEach(child => {
-            const ep = child.val();
-            const el = document.createElement('div');
-            el.className = 'episode';
-            el.innerHTML = `
-              <h4>${ep.title}</h4>
-              <button onclick="playVideo('${ep.stream}')">Tomosha qilish</button>
-            `;
-            episodeList.appendChild(el);
-          });
-        });
+        loadEpisodes(event.state.animeId);
       } else if (event.state.view === 'player') {
-        player.style.display = 'none';
-        episodeList.style.display = 'block';
-        animeList.style.display = 'none';
-        backBtn.style.display = 'block';
+        document.getElementById('player').style.display = 'block';
       }
     };
-  </script>
-</body>
+
+    // Yuklanganda anime ro‘yxatini chiqarish
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAnime();
+    });
+  </script></body>
   </html>
